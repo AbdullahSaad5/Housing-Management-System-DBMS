@@ -14,7 +14,7 @@ public class TestRunner {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(0, 0, 1280, 720);
 		frame.getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
-		frame.getContentPane().add(new BrowseAds());
+		frame.getContentPane().add(new AdminControlPanel());
 		frame.setVisible(true);
 	}
 }

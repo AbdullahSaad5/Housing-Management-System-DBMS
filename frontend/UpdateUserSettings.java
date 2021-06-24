@@ -14,10 +14,12 @@ public class UpdateUserSettings extends SignUp {
 	 * Create the panel.
 	 */
 	public UpdateUserSettings() {
+		setBounds(410, -100, 460, 740);
 		remove(mainTitle);
 		signupTitle.setText("Update User");
 		getData(Login.currentUserID);
 		remove(signupButton);
+
 	}
 
 	private void getData(String username) {
@@ -86,7 +88,7 @@ public class UpdateUserSettings extends SignUp {
 					SqlConnection.alterResults(updateAccountQuery);
 					SqlConnection.alterResults(updateUserQuery);
 					JOptionPane.showMessageDialog(null, "Data Updated Successfully");
-				} catch (Exception e1) {
+				} catch (SQLException e1) {
 					JOptionPane.showMessageDialog(null, "An error occured while processing your information. Please try again!");
 					e1.printStackTrace();
 				}

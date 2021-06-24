@@ -16,6 +16,7 @@ public class Login extends JPanel implements MouseListener {
 	private JPasswordField passwordField;
 	private JButton loginButton, signupButton, showPassword;
 	private char defaultChar;
+	private JCheckBox chckbxAdmin;
 	public static String currentUserID;
 
 	public Login() {
@@ -28,7 +29,7 @@ public class Login extends JPanel implements MouseListener {
 		JLabel mainTitle = new JLabel("   Housing Management System");
 		mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		mainTitle.setIcon(new ImageIcon(Login.class.getResource("/images/house.png")));
-		mainTitle.setFont(new Font("Tahoma", Font.BOLD, 22));
+		mainTitle.setFont(new Font("SansSerif", Font.BOLD, 20));
 		mainTitle.setBounds(10, 32, 440, 66);
 		add(mainTitle);
 
@@ -81,8 +82,8 @@ public class Login extends JPanel implements MouseListener {
 		showPassword.setForeground(null);
 		showPassword.setFocusable(false);
 		showPassword.setBorder(null);
-		
-		JCheckBox chckbxAdmin = new JCheckBox("  Admin");
+
+		chckbxAdmin = new JCheckBox("  Admin");
 		chckbxAdmin.setFocusable(false);
 		chckbxAdmin.setBackground(Color.WHITE);
 		chckbxAdmin.setBounds(115, 407, 129, 23);
@@ -113,16 +114,34 @@ public class Login extends JPanel implements MouseListener {
 		} else if (e.getSource() == loginButton) {
 			if (usernameField.getText().length() != 0 && passwordField.getText().length() != 0) {
 				try {
-					PreparedStatement checkCredsQuery = SqlConnection.connectToDatabase()
-							.prepareStatement("select * from account where username = ? and password = ?");
+
+					String query = "";
+					if (chckbxAdmin.isSelected()) {
+						query = "select * from account where username = ? and password = ? and user_type = 'admin'";
+					} else {
+						query = "select * from account where username = ? and password = ? and user_type = 'user'";
+					}
+					PreparedStatement checkCredsQuery = SqlConnection.connectToDatabase().prepareStatement(query);
 					checkCredsQuery.setString(1, usernameField.getText());
 					checkCredsQuery.setString(2, passwordField.getText());
 
 					if (SqlConnection.alterResults(checkCredsQuery) == 0) {
 						JOptionPane.showMessageDialog(null, "Invalid Username or Password!");
 					} else {
-						currentUserID = usernameField.getText();
-						Template.changePanel(new UserDashboard());
+						ResultSet result = SqlConnection.findResult(checkCredsQuery);
+						String blocked_status = "Y";
+						while (result.next()) {
+							blocked_status = result.getString(3);
+						}
+
+						if (blocked_status.equals("N")) {
+							currentUserID = usernameField.getText();
+							Template.changePanel(new UserDashboard());
+						}
+						else {
+							JOptionPane.showMessageDialog(null, "Your Account has been blocked by the Admins!");
+
+						}
 					}
 				}
 

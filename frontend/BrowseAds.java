@@ -6,6 +6,8 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
@@ -17,6 +19,7 @@ public class BrowseAds extends JPanel {
 	 */
 	public BrowseAds() {
 		setBackground(Color.WHITE);
+		setBounds(0, 0, 1280, 650);
 		setLayout(null);
 		JLabel titleLabel = new JLabel("Browse Advertisements");
 		titleLabel.setFont(new Font("SansSerif", Font.PLAIN, 22));

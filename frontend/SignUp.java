@@ -28,14 +28,14 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 		mainTitle.setBounds(10, 32, 440, 66);
 		mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		mainTitle.setIcon(new ImageIcon(Login.class.getResource("/images/house.png")));
-		mainTitle.setFont(new Font("Tahoma", Font.BOLD, 22));
+		mainTitle.setFont(new Font("SansSerif", Font.BOLD, 20));
 		add(mainTitle);
 
 		signupTitle = new JLabel("SignUp Form");
 		signupTitle.setBounds(10, 121, 440, 31);
 		signupTitle.setLabelFor(signupTitle);
 		signupTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		signupTitle.setFont(new Font("Tahoma", Font.BOLD, 20));
+		signupTitle.setFont(new Font("SansSerif", Font.BOLD, 20));
 		add(signupTitle);
 
 		JLabel usernameTitle = new JLabel("Username");
@@ -197,6 +197,7 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 						SqlConnection.alterResults(addAccountQuery);
 						SqlConnection.alterResults(addUserQuery);
 						JOptionPane.showMessageDialog(null, "User Registered Successfully");
+						Template.changePanel(new Login());
 					}
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, "An error occured while processing your information. Please try again!");
@@ -212,25 +213,21 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

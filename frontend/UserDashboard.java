@@ -18,9 +18,10 @@ public class UserDashboard extends JPanel implements ActionListener {
 	private JLabel bedroomsText, bathroomsText, storiesText, purposeText;
 	private JTextField areaField, priceField, bedroomField, bathroomField, storyField;
 	private JComboBox<String> selectProvince, selectCity, selectLocation, selectColony, selectType, selectPurpose;
-	private JButton postAd, addAdvertisment, houses, plots, filters, agents, userSettings;
+	private JButton postAd, addAdvertisment, houses, plots, filters, agents, userSettings, logout;
 	ArrayList<String> provinceList;
-	JPanel currentPanel, contentPanel;
+	static JPanel currentPanel;
+	static JPanel contentPanel;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public UserDashboard() {
@@ -37,6 +38,7 @@ public class UserDashboard extends JPanel implements ActionListener {
 		controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 5));
 
 		addAdvertisment = new JButton("Post Ad");
+		addAdvertisment.addActionListener(this);
 		addAdvertisment.setFocusable(false);
 		addAdvertisment.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		addAdvertisment.setPreferredSize(new Dimension(100, 60));
@@ -47,6 +49,7 @@ public class UserDashboard extends JPanel implements ActionListener {
 		controlPanel.add(addAdvertisment);
 
 		houses = new JButton("Houses");
+		houses.addActionListener(this);
 		houses.setFocusable(false);
 		houses.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		houses.setPreferredSize(new Dimension(100, 60));
@@ -57,6 +60,7 @@ public class UserDashboard extends JPanel implements ActionListener {
 		controlPanel.add(houses);
 
 		plots = new JButton("Plots");
+		plots.addActionListener(this);
 		plots.setFocusable(false);
 		plots.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		plots.setPreferredSize(new Dimension(100, 60));
@@ -67,6 +71,7 @@ public class UserDashboard extends JPanel implements ActionListener {
 		controlPanel.add(plots);
 
 		filters = new JButton("Filters");
+		filters.addActionListener(this);
 		filters.setFocusable(false);
 		filters.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		filters.setPreferredSize(new Dimension(100, 60));
@@ -77,6 +82,7 @@ public class UserDashboard extends JPanel implements ActionListener {
 		controlPanel.add(filters);
 
 		agents = new JButton("Agents");
+		agents.addActionListener(this);
 		agents.setFocusable(false);
 		agents.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		agents.setPreferredSize(new Dimension(100, 60));
@@ -96,6 +102,18 @@ public class UserDashboard extends JPanel implements ActionListener {
 		userSettings.setVerticalTextPosition(JLabel.BOTTOM);
 		userSettings.setHorizontalTextPosition(JLabel.CENTER);
 		controlPanel.add(userSettings);
+		
+		
+		logout = new JButton("Logout");
+		logout.addActionListener(this);
+		logout.setFocusable(false);
+		logout.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		logout.setPreferredSize(new Dimension(100, 60));
+		logout.setBackground(new Color(255, 255, 255));
+		logout.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/logout.png")));
+		logout.setVerticalTextPosition(JLabel.BOTTOM);
+		logout.setHorizontalTextPosition(JLabel.CENTER);
+		controlPanel.add(logout);
 
 		try {
 			PreparedStatement provinces = SqlConnection.connectToDatabase()
@@ -275,8 +293,21 @@ public class UserDashboard extends JPanel implements ActionListener {
 				postAd.setBounds(540, 570, 200, 30);
 			}
 		} else if (ac.getSource() == userSettings) {
-			replaceContentPanel(new UpdateUserSettings());
-		} else if (ac.getSource() == postAd) {
+			replaceContentPanel(new UserSettings());
+		} else if (ac.getSource() == houses) {
+			replaceContentPanel(new BrowseAds());
+		}else if (ac.getSource() == plots) {
+			replaceContentPanel(new BrowseAds());
+		}else if (ac.getSource() == agents) {
+			replaceContentPanel(new UserSettings());
+		}else if (ac.getSource() == logout) {
+			Template.mainFrame.setSize(460, 640);
+			Template.changePanel(new Login());
+		}else if (ac.getSource() == addAdvertisment) {
+			Template.changePanel(new UserDashboard());
+		}else if (ac.getSource() == userSettings) {
+			replaceContentPanel(new UserSettings());
+		}else if (ac.getSource() == postAd) {
 			if (selectType.getSelectedIndex() == 1) {
 				if (!(priceField.getText().isBlank() && areaField.getText().isBlank() && priceField.getText().isBlank()
 						&& bedroomField.getText().isBlank() && bathroomField.getText().isBlank()
@@ -300,9 +331,12 @@ public class UserDashboard extends JPanel implements ActionListener {
 						result.next();
 						String cnic = result.getString(1);
 						
-						PreparedStatement idQuery = SqlConnection.connectToDatabase().prepareStatement("select * from adverstisement");
-						int count = idQuery.executeUpdate();
-
+						PreparedStatement idQuery = SqlConnection.connectToDatabase().prepareStatement("select count(*) from adverstisement");
+						ResultSet queryResult = SqlConnection.findResult(idQuery);
+						int count = 0;
+						while(queryResult.next()) {
+							count = queryResult.getInt(1);
+						}
 						String query = "insert into advertisement values (?, ?, ?, ?, ?, ?)";
 						PreparedStatement addAdvertisementQuery = SqlConnection.connectToDatabase().prepareStatement(query);
 						addAdvertisementQuery.setInt(1, ++count);
@@ -347,10 +381,10 @@ public class UserDashboard extends JPanel implements ActionListener {
 		selectPurpose.setVisible(visible);
 	}
 
-	private void replaceContentPanel(JPanel panel) {
+	public static void replaceContentPanel(JPanel panel) {
 		currentPanel.remove(contentPanel);
-		currentPanel.add(panel);
-		panel.setBounds(410, -100, 460, 740);
+		contentPanel = panel;
+		currentPanel.add(contentPanel);
 		currentPanel.revalidate();
 		currentPanel.repaint();
 	}
