@@ -168,6 +168,9 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 				try {
 					PreparedStatement checkUsernameQuery = SqlConnection.connectToDatabase()
 							.prepareStatement("select * from account where username = ?");
+					
+					PreparedStatement checkCNICQuery = SqlConnection.connectToDatabase()
+							.prepareStatement("select * from users where CNIC = ?");
 
 					PreparedStatement addAccountQuery = SqlConnection.connectToDatabase()
 							.prepareStatement("insert into account values(?, ?, ?, ?)");
@@ -190,10 +193,16 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 					addUserQuery.setString(8, phoneField.getText());
 
 					checkUsernameQuery.setString(1, usernameField.getText());
+					checkCNICQuery.setString(1, CNIC_Field.getText());
+
 
 					if (SqlConnection.alterResults(checkUsernameQuery) != 0) {
 						JOptionPane.showMessageDialog(null, "Username already registered. Try another one.");
-					} else {
+					} else if(SqlConnection.alterResults(checkCNICQuery) != 0) {
+						JOptionPane.showMessageDialog(null, "CNIC already in use. Try another one.");
+
+					}
+						else {
 						SqlConnection.alterResults(addAccountQuery);
 						SqlConnection.alterResults(addUserQuery);
 						JOptionPane.showMessageDialog(null, "User Registered Successfully");

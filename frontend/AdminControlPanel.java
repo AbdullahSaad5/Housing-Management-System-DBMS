@@ -37,12 +37,15 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 	private JTextField newLocation;
 	private JLabel colonyLabel, locationLabel, cityLabel, provinceLabel;
 	private ArrayList<String> provinceList;
-	private JButton submitButton;
+	private JButton submitButton, addLocations, blockUsers, viewRecords;
+	private static JPanel currentPanel, contentPanel;
 
 	/**
 	 * Create the panel.
 	 */
 	public AdminControlPanel() {
+
+		Template.mainFrame.setSize(new Dimension(1280, 720));
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel controlPanel = new JPanel();
@@ -52,7 +55,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		controlPanel.setPreferredSize(new Dimension(1280, 70));
 		add(controlPanel, BorderLayout.NORTH);
 
-		JButton addLocations = new JButton("Add Locations");
+		addLocations = new JButton("Add Locations");
 		addLocations.setSelectedIcon(new ImageIcon(AdminControlPanel.class.getResource("/images/world.png")));
 		addLocations.setFocusable(false);
 		addLocations.setFont(new Font("SansSerif", Font.PLAIN, 9));
@@ -63,7 +66,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		addLocations.setHorizontalTextPosition(JLabel.CENTER);
 		controlPanel.add(addLocations);
 
-		JButton blockUsers = new JButton("Block Users");
+		blockUsers = new JButton("Block Users");
 		blockUsers.setSelectedIcon(new ImageIcon(AdminControlPanel.class.getResource("/images/block.png")));
 		blockUsers.setFocusable(false);
 		blockUsers.setFont(new Font("SansSerif", Font.PLAIN, 10));
@@ -74,7 +77,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		blockUsers.setHorizontalTextPosition(JLabel.CENTER);
 		controlPanel.add(blockUsers);
 
-		JButton viewRecords = new JButton("View Records");
+		viewRecords = new JButton("View Records");
 		viewRecords.setFocusable(false);
 		viewRecords.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		viewRecords.setPreferredSize(new Dimension(100, 60));
@@ -84,17 +87,17 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		viewRecords.setHorizontalTextPosition(JLabel.CENTER);
 		controlPanel.add(viewRecords);
 
-		JPanel panel = new JPanel();
-		panel.setBackground(Color.WHITE);
-		add(panel, BorderLayout.CENTER);
-		panel.setPreferredSize(new Dimension(1280, 650));
-		panel.setLayout(new GridLayout(0, 1, 0, 0));
+		currentPanel = new JPanel();
+		currentPanel.setBackground(Color.WHITE);
+		add(currentPanel, BorderLayout.CENTER);
+		currentPanel.setPreferredSize(new Dimension(1280, 650));
+		currentPanel.setLayout(new GridLayout(0, 1, 0, 0));
 
-		JPanel contentPanel = new JPanel();
+		contentPanel = new JPanel();
 		contentPanel.setBackground(Color.WHITE);
 		contentPanel.setLayout(null);
 		contentPanel.setPreferredSize(new Dimension(1280, 650));
-		panel.add(contentPanel);
+		currentPanel.add(contentPanel);
 
 		try {
 			PreparedStatement provinces = SqlConnection.connectToDatabase()
@@ -189,12 +192,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			newLocation.setBounds(670, 220, 130, 24);
 
 		} else if (selectType.getSelectedIndex() == 1) {
-			selectProvince.removeAllItems();
-			for (int i = 0; i < provinceList.size(); i++) {
-				selectProvince.addItem(provinceList.get(i));
-			}
-			revalidate();
-			repaint();
+
 			cityLabel.setVisible(true);
 			locationLabel.setVisible(false);
 			colonyLabel.setVisible(false);
@@ -212,11 +210,11 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			selectProvince.setVisible(true);
 			newLocation.setBounds(670, 360, 130, 24);
 			if (selectProvince.getSelectedItem() != null) {
-				String query = "select city_name from city province_id = (select province_id from province where province_name = ?)";
+				String query = "select city_name from city where province_id = (select province_id from province where province_name = ?)";
 				dropdown(query, selectProvince, selectCity);
 
 			} else {
-				selectLocation.setSelectedItem(null);
+				selectCity.setSelectedItem(null);
 			}
 
 		} else if (selectType.getSelectedIndex() == 3) {
@@ -258,7 +256,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 				if (!newLocation.getText().isBlank()) {
 					try {
 						PreparedStatement totalProvince = SqlConnection.connectToDatabase()
-								.prepareStatement("select count(*) from province");
+								.prepareStatement("select province_id from province where province_id = (select max(province_id) from province)");
 						ResultSet result = totalProvince.executeQuery();
 						int count = 0;
 						while (result.next()) {
@@ -275,32 +273,139 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 					}
 
 				}
-			}
-		}
+			} else if (selectType.getSelectedIndex() == 1) {
+				if (!newLocation.getText().isBlank()) {
+					try {
+						PreparedStatement totalCity = SqlConnection.connectToDatabase()
+								.prepareStatement("select city_id from city where city_id = (select max(city_id) from city)");
+						PreparedStatement provinceID = SqlConnection.connectToDatabase()
+								.prepareStatement("select province_id from province where province_name = ?");
+						provinceID.setString(1, selectProvince.getSelectedItem().toString());
+						System.out.println(selectProvince.getSelectedItem().toString());
 
+						ResultSet result = totalCity.executeQuery();
+						int count = 0;
+						while (result.next()) {
+							count = result.getInt(1);
+						}
+
+						result = provinceID.executeQuery();
+						int province_id = 0;
+						while (result.next()) {
+							province_id = result.getInt(1);
+						}
+						PreparedStatement addCity = SqlConnection.connectToDatabase()
+								.prepareStatement("insert into city values (?, ?, ?)");
+						addCity.setInt(1, ++count);
+						addCity.setString(2, newLocation.getText());
+						addCity.setInt(3, province_id);
+						addCity.executeUpdate();
+						JOptionPane.showMessageDialog(null, "City Added to Database!");
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+
+				}
+			} else if (selectType.getSelectedIndex() == 2) {
+				if (!newLocation.getText().isBlank()) {
+					try {
+						PreparedStatement totalLocation = SqlConnection.connectToDatabase()
+								.prepareStatement("select location_id from location where location_id = (select max(location_id) from location)");
+						PreparedStatement cityID = SqlConnection.connectToDatabase()
+								.prepareStatement("select city_id from city where city_name = ?");
+						cityID.setString(1, selectCity.getSelectedItem().toString());
+
+						ResultSet result = totalLocation.executeQuery();
+						int count = 0;
+						while (result.next()) {
+							count = result.getInt(1);
+						}
+
+						result = cityID.executeQuery();
+						int city_id = 0;
+						while (result.next()) {
+							city_id = result.getInt(1);
+						}
+						PreparedStatement addCity = SqlConnection.connectToDatabase()
+								.prepareStatement("insert into location values (?, ?, ?)");
+						addCity.setInt(1, ++count);
+						addCity.setString(2, newLocation.getText());
+						addCity.setInt(3, city_id);
+						addCity.executeUpdate();
+						JOptionPane.showMessageDialog(null, "Location Added to Database!");
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+
+				}
+			} else if (selectType.getSelectedIndex() == 3) {
+				if (!newLocation.getText().isBlank()) {
+					try {
+						PreparedStatement totalColony = SqlConnection.connectToDatabase()
+								.prepareStatement("select colony_id from colony where colony_id = (select max(colony_id) from colony)");
+						PreparedStatement locationID = SqlConnection.connectToDatabase()
+								.prepareStatement("select location_id from location where location_name = ?");
+						locationID.setString(1, selectLocation.getSelectedItem().toString());
+
+						ResultSet result = totalColony.executeQuery();
+						int count = 0;
+						while (result.next()) {
+							count = result.getInt(1);
+						}
+
+						result = locationID.executeQuery();
+						int location_id = 0;
+						while (result.next()) {
+							location_id = result.getInt(1);
+						}
+						PreparedStatement addColony = SqlConnection.connectToDatabase()
+								.prepareStatement("insert into colony values (?, ?, ?)");
+						addColony.setInt(1, ++count);
+						addColony.setString(2, newLocation.getText());
+						addColony.setInt(3, location_id);
+						addColony.executeUpdate();
+						JOptionPane.showMessageDialog(null, "Colony Added to Database!");
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+
+				}
+			} else if (e.getSource() == viewRecords) {
+				AdminControlPanel.replaceContentPanel(new ViewRecords());
+			}
+
+		} else if (e.getSource() == addLocations) {
+			Template.changePanel(new AdminControlPanel());
+		} else if (e.getSource() == blockUsers) {
+			AdminControlPanel.replaceContentPanel(new BlockUsers());
+		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-
-	}
+	}	
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
+	}
 
+	public static void replaceContentPanel(JPanel panel) {
+		currentPanel.remove(contentPanel);
+		contentPanel = panel;
+		currentPanel.add(contentPanel);
+		currentPanel.revalidate();
+		currentPanel.repaint();
 	}
 }

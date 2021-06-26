@@ -135,10 +135,14 @@ public class Login extends JPanel implements MouseListener {
 						}
 
 						if (blocked_status.equals("N")) {
-							currentUserID = usernameField.getText();
-							Template.changePanel(new UserDashboard());
-						}
-						else {
+							if (chckbxAdmin.isSelected()) {
+								Template.changePanel(new AdminControlPanel());
+
+							} else {
+								currentUserID = usernameField.getText();
+								Template.changePanel(new UserDashboard());
+							}
+						} else {
 							JOptionPane.showMessageDialog(null, "Your Account has been blocked by the Admins!");
 
 						}
