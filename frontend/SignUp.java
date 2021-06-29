@@ -1,13 +1,26 @@
 package frontend;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.sql.PreparedStatement;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import backend.SqlConnection;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;
 
 public class SignUp extends JPanel implements MouseListener, ActionListener {
 
@@ -138,7 +151,7 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 		loginButton.setFocusable(false);
 
 		String[] genders = { "Male", "Female", "Other" };
-		genderBox = new JComboBox<String>(genders);
+		genderBox = new JComboBox<>(genders);
 		genderBox.setBackground(Color.WHITE);
 		genderBox.setBounds(260, 314, 106, 24);
 		genderBox.addActionListener(this);
@@ -168,7 +181,7 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 				try {
 					PreparedStatement checkUsernameQuery = SqlConnection.connectToDatabase()
 							.prepareStatement("select * from account where username = ?");
-					
+
 					PreparedStatement checkCNICQuery = SqlConnection.connectToDatabase()
 							.prepareStatement("select * from users where CNIC = ?");
 

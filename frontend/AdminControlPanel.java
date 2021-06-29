@@ -1,24 +1,10 @@
 package frontend;
 
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import javax.swing.UIManager;
-
-import backend.SqlConnection;
-
 import java.awt.FlowLayout;
 import java.awt.Font;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +14,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+
+import backend.SqlConnection;
 
 @SuppressWarnings("serial")
 public class AdminControlPanel extends JPanel implements ActionListener, MouseListener {
@@ -37,7 +34,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 	private JTextField newLocation;
 	private JLabel colonyLabel, locationLabel, cityLabel, provinceLabel;
 	private ArrayList<String> provinceList;
-	private JButton submitButton, addLocations, blockUsers, viewRecords;
+	private JButton submitButton, addLocations, blockUsers, viewRecords, logout, updateLocation, deleteLocation;
 	private static JPanel currentPanel, contentPanel;
 
 	/**
@@ -56,36 +53,50 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		add(controlPanel, BorderLayout.NORTH);
 
 		addLocations = new JButton("Add Locations");
+		addLocations.addMouseListener(this);
 		addLocations.setSelectedIcon(new ImageIcon(AdminControlPanel.class.getResource("/images/world.png")));
 		addLocations.setFocusable(false);
 		addLocations.setFont(new Font("SansSerif", Font.PLAIN, 9));
 		addLocations.setPreferredSize(new Dimension(100, 60));
 		addLocations.setBackground(new Color(255, 255, 255));
 		addLocations.setIcon(new ImageIcon(AdminControlPanel.class.getResource("/images/world.png")));
-		addLocations.setVerticalTextPosition(JLabel.BOTTOM);
-		addLocations.setHorizontalTextPosition(JLabel.CENTER);
+		addLocations.setVerticalTextPosition(SwingConstants.BOTTOM);
+		addLocations.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(addLocations);
 
 		blockUsers = new JButton("Block Users");
+		blockUsers.addMouseListener(this);
 		blockUsers.setSelectedIcon(new ImageIcon(AdminControlPanel.class.getResource("/images/block.png")));
 		blockUsers.setFocusable(false);
 		blockUsers.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		blockUsers.setPreferredSize(new Dimension(100, 60));
 		blockUsers.setBackground(new Color(255, 255, 255));
 		blockUsers.setIcon(new ImageIcon(AdminControlPanel.class.getResource("/images/block.png")));
-		blockUsers.setVerticalTextPosition(JLabel.BOTTOM);
-		blockUsers.setHorizontalTextPosition(JLabel.CENTER);
+		blockUsers.setVerticalTextPosition(SwingConstants.BOTTOM);
+		blockUsers.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(blockUsers);
 
 		viewRecords = new JButton("View Records");
+		viewRecords.addMouseListener(this);
 		viewRecords.setFocusable(false);
 		viewRecords.setFont(new Font("SansSerif", Font.PLAIN, 10));
 		viewRecords.setPreferredSize(new Dimension(100, 60));
 		viewRecords.setBackground(new Color(255, 255, 255));
 		viewRecords.setIcon(new ImageIcon(AdminControlPanel.class.getResource("/images/record.png")));
-		viewRecords.setVerticalTextPosition(JLabel.BOTTOM);
-		viewRecords.setHorizontalTextPosition(JLabel.CENTER);
+		viewRecords.setVerticalTextPosition(SwingConstants.BOTTOM);
+		viewRecords.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(viewRecords);
+
+		logout = new JButton("Logout");
+		logout.addActionListener(this);
+		logout.setFocusable(false);
+		logout.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		logout.setPreferredSize(new Dimension(100, 60));
+		logout.setBackground(new Color(255, 255, 255));
+		logout.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/logout.png")));
+		logout.setVerticalTextPosition(SwingConstants.BOTTOM);
+		logout.setHorizontalTextPosition(SwingConstants.CENTER);
+		controlPanel.add(logout);
 
 		currentPanel = new JPanel();
 		currentPanel.setBackground(Color.WHITE);
@@ -103,7 +114,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			PreparedStatement provinces = SqlConnection.connectToDatabase()
 					.prepareStatement("select province_name from province");
 			ResultSet result = SqlConnection.findResult(provinces);
-			provinceList = new ArrayList<String>();
+			provinceList = new ArrayList<>();
 			while (result.next())
 				provinceList.add(result.getString(1));
 		} catch (Exception e1) {
@@ -118,15 +129,14 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		selectProvince.setBounds(670, 220, 130, 24);
 		contentPanel.add(selectProvince);
 
-		selectCity = new JComboBox<String>();
+		selectCity = new JComboBox<>();
 		selectCity.setBackground(Color.WHITE);
 		selectCity.addActionListener(this);
 		selectCity.setBounds(670, 290, 130, 24);
 		contentPanel.add(selectCity);
 
-		selectLocation = new JComboBox<String>();
+		selectLocation = new JComboBox<>();
 		selectLocation.setBackground(Color.WHITE);
-		selectLocation.addActionListener(this);
 		selectLocation.setBounds(670, 360, 130, 24);
 		contentPanel.add(selectLocation);
 
@@ -140,6 +150,18 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		mainLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		mainLabel.setBounds(10, 50, 1260, 30);
 		contentPanel.add(mainLabel);
+
+		deleteLocation = new JButton("Delete Locations");
+		deleteLocation.addMouseListener(this);
+		deleteLocation.setBounds(990, 70, 160, 25);
+		deleteLocation.setFocusable(false);
+		contentPanel.add(deleteLocation);
+
+		updateLocation = new JButton("Update Locations");
+		updateLocation.addMouseListener(this);
+		updateLocation.setBounds(990, 120, 160, 25);
+		updateLocation.setFocusable(false);
+		contentPanel.add(updateLocation);
 
 		provinceLabel = new JLabel("Province");
 		provinceLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -162,7 +184,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		contentPanel.add(colonyLabel);
 
 		String types[] = { "Province", "City", "Location", "Colony" };
-		selectType = new JComboBox<String>(types);
+		selectType = new JComboBox<>(types);
 		selectType.setSelectedIndex(3);
 		selectType.addActionListener(this);
 		selectType.setBounds(670, 150, 130, 24);
@@ -182,7 +204,19 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (selectType.getSelectedIndex() == 0) {
+		if (e.getSource() == selectProvince) {
+			if (selectProvince.getSelectedItem() != null) {
+				String query = "select city_name from city where province_id = (select province_id from province where province_name = ?)";
+				dropdown(query, selectProvince, selectCity);
+			}
+		} else if (e.getSource() == selectCity) {
+			if (selectCity.getSelectedItem() != null) {
+				String query = "select location_name from location where city_id = (select city_id from city where city_name = ?)";
+				dropdown(query, selectCity, selectLocation);
+			}
+		}
+
+		else if (selectType.getSelectedIndex() == 0) {
 			cityLabel.setVisible(false);
 			locationLabel.setVisible(false);
 			colonyLabel.setVisible(false);
@@ -212,7 +246,6 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			if (selectProvince.getSelectedItem() != null) {
 				String query = "select city_name from city where province_id = (select province_id from province where province_name = ?)";
 				dropdown(query, selectProvince, selectCity);
-
 			} else {
 				selectCity.setSelectedItem(null);
 			}
@@ -225,7 +258,6 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			selectLocation.setVisible(true);
 			selectProvince.setVisible(true);
 			newLocation.setBounds(670, 430, 130, 24);
-
 			if (selectCity.getSelectedItem() != null) {
 				String query = "select location_name from location where city_id = (select city_id from city where city_name = ?)";
 				dropdown(query, selectCity, selectLocation);
@@ -245,7 +277,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 				box2.addItem(result.getString(1));
 			}
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			System.out.println("Error");
 		}
 	}
 
@@ -255,8 +287,8 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			if (selectType.getSelectedIndex() == 0) {
 				if (!newLocation.getText().isBlank()) {
 					try {
-						PreparedStatement totalProvince = SqlConnection.connectToDatabase()
-								.prepareStatement("select province_id from province where province_id = (select max(province_id) from province)");
+						PreparedStatement totalProvince = SqlConnection.connectToDatabase().prepareStatement(
+								"select province_id from province where province_id = (select max(province_id) from province)");
 						ResultSet result = totalProvince.executeQuery();
 						int count = 0;
 						while (result.next()) {
@@ -276,8 +308,8 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			} else if (selectType.getSelectedIndex() == 1) {
 				if (!newLocation.getText().isBlank()) {
 					try {
-						PreparedStatement totalCity = SqlConnection.connectToDatabase()
-								.prepareStatement("select city_id from city where city_id = (select max(city_id) from city)");
+						PreparedStatement totalCity = SqlConnection.connectToDatabase().prepareStatement(
+								"select city_id from city where city_id = (select max(city_id) from city)");
 						PreparedStatement provinceID = SqlConnection.connectToDatabase()
 								.prepareStatement("select province_id from province where province_name = ?");
 						provinceID.setString(1, selectProvince.getSelectedItem().toString());
@@ -309,8 +341,8 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			} else if (selectType.getSelectedIndex() == 2) {
 				if (!newLocation.getText().isBlank()) {
 					try {
-						PreparedStatement totalLocation = SqlConnection.connectToDatabase()
-								.prepareStatement("select location_id from location where location_id = (select max(location_id) from location)");
+						PreparedStatement totalLocation = SqlConnection.connectToDatabase().prepareStatement(
+								"select location_id from location where location_id = (select max(location_id) from location)");
 						PreparedStatement cityID = SqlConnection.connectToDatabase()
 								.prepareStatement("select city_id from city where city_name = ?");
 						cityID.setString(1, selectCity.getSelectedItem().toString());
@@ -341,8 +373,8 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			} else if (selectType.getSelectedIndex() == 3) {
 				if (!newLocation.getText().isBlank()) {
 					try {
-						PreparedStatement totalColony = SqlConnection.connectToDatabase()
-								.prepareStatement("select colony_id from colony where colony_id = (select max(colony_id) from colony)");
+						PreparedStatement totalColony = SqlConnection.connectToDatabase().prepareStatement(
+								"select colony_id from colony where colony_id = (select max(colony_id) from colony)");
 						PreparedStatement locationID = SqlConnection.connectToDatabase()
 								.prepareStatement("select location_id from location where location_name = ?");
 						locationID.setString(1, selectLocation.getSelectedItem().toString());
@@ -370,21 +402,28 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 					}
 
 				}
-			} else if (e.getSource() == viewRecords) {
-				AdminControlPanel.replaceContentPanel(new ViewRecords());
 			}
 
 		} else if (e.getSource() == addLocations) {
 			Template.changePanel(new AdminControlPanel());
 		} else if (e.getSource() == blockUsers) {
 			AdminControlPanel.replaceContentPanel(new BlockUsers());
+		} else if (e.getSource() == viewRecords) {
+			AdminControlPanel.replaceContentPanel(new ViewRecords());
+		} else if (e.getSource() == logout) {
+			Template.mainFrame.setSize(460, 640);
+			Template.changePanel(new Login());
+		} else if (e.getSource() == deleteLocation) {
+			AdminControlPanel.replaceContentPanel(new DeleteLocation());
+		} else if (e.getSource() == updateLocation) {
+			AdminControlPanel.replaceContentPanel(new UpdateLocation());
 		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-	}	
+	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {

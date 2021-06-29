@@ -1,15 +1,27 @@
 package frontend;
 
-import java.awt.*;
-
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
-import java.text.SimpleDateFormat;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 import backend.SqlConnection;
 
@@ -44,8 +56,8 @@ public class UserDashboard extends JPanel implements ActionListener {
 		addAdvertisment.setPreferredSize(new Dimension(100, 60));
 		addAdvertisment.setBackground(new Color(255, 255, 255));
 		addAdvertisment.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/add.png")));
-		addAdvertisment.setVerticalTextPosition(JLabel.BOTTOM);
-		addAdvertisment.setHorizontalTextPosition(JLabel.CENTER);
+		addAdvertisment.setVerticalTextPosition(SwingConstants.BOTTOM);
+		addAdvertisment.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(addAdvertisment);
 
 		houses = new JButton("Houses");
@@ -55,8 +67,8 @@ public class UserDashboard extends JPanel implements ActionListener {
 		houses.setPreferredSize(new Dimension(100, 60));
 		houses.setBackground(new Color(255, 255, 255));
 		houses.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/home.png")));
-		houses.setVerticalTextPosition(JLabel.BOTTOM);
-		houses.setHorizontalTextPosition(JLabel.CENTER);
+		houses.setVerticalTextPosition(SwingConstants.BOTTOM);
+		houses.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(houses);
 
 		plots = new JButton("Plots");
@@ -66,8 +78,8 @@ public class UserDashboard extends JPanel implements ActionListener {
 		plots.setPreferredSize(new Dimension(100, 60));
 		plots.setBackground(new Color(255, 255, 255));
 		plots.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/architect.png")));
-		plots.setVerticalTextPosition(JLabel.BOTTOM);
-		plots.setHorizontalTextPosition(JLabel.CENTER);
+		plots.setVerticalTextPosition(SwingConstants.BOTTOM);
+		plots.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(plots);
 
 		filters = new JButton("Filters");
@@ -77,8 +89,8 @@ public class UserDashboard extends JPanel implements ActionListener {
 		filters.setPreferredSize(new Dimension(100, 60));
 		filters.setBackground(new Color(255, 255, 255));
 		filters.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/filter.png")));
-		filters.setVerticalTextPosition(JLabel.BOTTOM);
-		filters.setHorizontalTextPosition(JLabel.CENTER);
+		filters.setVerticalTextPosition(SwingConstants.BOTTOM);
+		filters.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(filters);
 
 		agents = new JButton("Agents");
@@ -88,8 +100,8 @@ public class UserDashboard extends JPanel implements ActionListener {
 		agents.setPreferredSize(new Dimension(100, 60));
 		agents.setBackground(new Color(255, 255, 255));
 		agents.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/phone.png")));
-		agents.setVerticalTextPosition(JLabel.BOTTOM);
-		agents.setHorizontalTextPosition(JLabel.CENTER);
+		agents.setVerticalTextPosition(SwingConstants.BOTTOM);
+		agents.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(agents);
 
 		userSettings = new JButton("User Settings");
@@ -99,8 +111,8 @@ public class UserDashboard extends JPanel implements ActionListener {
 		userSettings.setPreferredSize(new Dimension(100, 60));
 		userSettings.setBackground(new Color(255, 255, 255));
 		userSettings.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/user.png")));
-		userSettings.setVerticalTextPosition(JLabel.BOTTOM);
-		userSettings.setHorizontalTextPosition(JLabel.CENTER);
+		userSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
+		userSettings.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(userSettings);
 
 		logout = new JButton("Logout");
@@ -110,15 +122,15 @@ public class UserDashboard extends JPanel implements ActionListener {
 		logout.setPreferredSize(new Dimension(100, 60));
 		logout.setBackground(new Color(255, 255, 255));
 		logout.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/logout.png")));
-		logout.setVerticalTextPosition(JLabel.BOTTOM);
-		logout.setHorizontalTextPosition(JLabel.CENTER);
+		logout.setVerticalTextPosition(SwingConstants.BOTTOM);
+		logout.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(logout);
 
 		try {
 			PreparedStatement provinces = SqlConnection.connectToDatabase()
 					.prepareStatement("select province_name from province");
 			ResultSet result = SqlConnection.findResult(provinces);
-			provinceList = new ArrayList<String>();
+			provinceList = new ArrayList<>();
 			while (result.next())
 				provinceList.add(result.getString(1));
 		} catch (Exception e1) {
@@ -178,17 +190,17 @@ public class UserDashboard extends JPanel implements ActionListener {
 		selectProvince.setBounds(860, 80, 250, 24);
 		contentPanel.add(selectProvince);
 
-		selectCity = new JComboBox<String>();
+		selectCity = new JComboBox<>();
 		selectCity.addActionListener(this);
 		selectCity.setBounds(860, 150, 250, 24);
 		contentPanel.add(selectCity);
 
-		selectLocation = new JComboBox<String>();
+		selectLocation = new JComboBox<>();
 		selectLocation.addActionListener(this);
 		selectLocation.setBounds(860, 220, 250, 24);
 		contentPanel.add(selectLocation);
 
-		selectColony = new JComboBox<String>();
+		selectColony = new JComboBox<>();
 		selectColony.addActionListener(this);
 		selectColony.setBounds(860, 290, 250, 24);
 		contentPanel.add(selectColony);
@@ -221,13 +233,13 @@ public class UserDashboard extends JPanel implements ActionListener {
 		purposeText.setBounds(300, 500, 70, 15);
 		contentPanel.add(purposeText);
 
-		selectType = new JComboBox<String>(types);
+		selectType = new JComboBox<>(types);
 		selectType.setSelectedIndex(1);
 		selectType.addActionListener(this);
 		selectType.setBounds(418, 75, 114, 24);
 		contentPanel.add(selectType);
 
-		selectPurpose = new JComboBox<String>(purpose);
+		selectPurpose = new JComboBox<>(purpose);
 		selectPurpose.setBounds(418, 500, 114, 24);
 		contentPanel.add(selectPurpose);
 
@@ -260,7 +272,7 @@ public class UserDashboard extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent ac) {
 		if (ac.getSource() == selectProvince) {
 			if (selectProvince.getSelectedItem() != null) {
-				String query = "select city_name from city where province_id = (select province_id from province where province_name = ?)";
+				String query = "select city_name from city natural join province where province_name = ?";
 				dropdown(query, selectProvince, selectCity);
 			} else {
 				selectCity.setSelectedItem(null);
@@ -269,7 +281,9 @@ public class UserDashboard extends JPanel implements ActionListener {
 
 		else if (ac.getSource() == selectCity) {
 			if (selectCity.getSelectedItem() != null) {
-				String query = "select location_name from location where city_id = (select city_id from city where city_name = ?)";
+				String query = "select location_name from location natural join city natural join province "
+						+ "where city_name = ? and province_name = '" + selectProvince.getSelectedItem().toString()
+						+ "'";
 				dropdown(query, selectCity, selectLocation);
 
 			} else {
@@ -277,7 +291,10 @@ public class UserDashboard extends JPanel implements ActionListener {
 			}
 		} else if (ac.getSource() == selectLocation) {
 			if (selectLocation.getSelectedItem() != null) {
-				String query = "select colony_name from colony where location_id = (select location_id from location where location_name = ?)";
+				String query = "select colony_name from colony natural join location natural join city natural join province"
+						+ " where location_name = ? and  city_name = '" + selectCity.getSelectedItem().toString()
+						+ "' and province_name = '" + selectProvince.getSelectedItem().toString() + "'";
+
 				dropdown(query, selectLocation, selectColony);
 
 			} else {
@@ -295,9 +312,9 @@ public class UserDashboard extends JPanel implements ActionListener {
 		} else if (ac.getSource() == userSettings) {
 			replaceContentPanel(new UserSettings());
 		} else if (ac.getSource() == houses) {
-			replaceContentPanel(new BrowseAds());
+			replaceContentPanel(new BrowseHouses());
 		} else if (ac.getSource() == plots) {
-			replaceContentPanel(new BrowseAds());
+			replaceContentPanel(new BrowsePlots());
 		} else if (ac.getSource() == agents) {
 			replaceContentPanel(new UserSettings());
 		} else if (ac.getSource() == logout) {
@@ -380,6 +397,83 @@ public class UserDashboard extends JPanel implements ActionListener {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Please Fill all the Details!");
+
+				}
+			}
+			if (selectType.getSelectedIndex() == 0	) {
+				if (!(priceField.getText().isBlank() && areaField.getText().isBlank())
+						&& selectCity.getSelectedItem() != null && selectProvince.getSelectedItem() != null
+						&& selectLocation.getSelectedItem() != null && selectColony.getSelectedItem() != null) {
+					PreparedStatement getColonyID;
+					try {
+						getColonyID = SqlConnection.connectToDatabase()
+								.prepareStatement("select colony_id from colony natural join "
+										+ "location natural join city natural join province where colony_name = ? and location_name = ? "
+										+ "and city_name = ? and province_name = ?");
+
+						getColonyID.setString(1, selectColony.getSelectedItem().toString());
+						getColonyID.setString(2, selectLocation.getSelectedItem().toString());
+						getColonyID.setString(3, selectCity.getSelectedItem().toString());
+						getColonyID.setString(4, selectProvince.getSelectedItem().toString());
+
+						ResultSet result = getColonyID.executeQuery();
+						result.next();
+						int colony_id = result.getInt(1);
+
+						PreparedStatement userCNIC = SqlConnection.connectToDatabase()
+								.prepareStatement("select CNIC from users where username = ?");
+						userCNIC.setString(1, Login.currentUserID);
+						result = userCNIC.executeQuery();
+						result.next();
+						String cnic = result.getString(1);
+						
+						PreparedStatement idQuery = SqlConnection.connectToDatabase().prepareStatement(
+								"select advertisement_id from advertisement where advertisement_id = (select max(advertisement_id) from advertisement)");
+						ResultSet queryResult = SqlConnection.findResult(idQuery);
+						int count = 0;
+						while (queryResult.next()) {
+							count = queryResult.getInt(1);
+						}
+						int property_id = ++count;
+						int advertisement_id = property_id;
+						
+						String query = "insert into property values (?, ?, ?)";
+						PreparedStatement addPropertyQuery = SqlConnection.connectToDatabase().prepareStatement(query);
+						addPropertyQuery.setInt(1, property_id);
+						addPropertyQuery.setInt(2, colony_id);
+						addPropertyQuery.setString(3, "plot");
+
+						SqlConnection.alterResults(addPropertyQuery);
+
+						query = "insert into plot values (?, ?)";
+						PreparedStatement addPlotQuery = SqlConnection.connectToDatabase().prepareStatement(query);
+						addPlotQuery.setInt(1, property_id);
+						addPlotQuery.setInt(2, Integer.parseInt(areaField.getText()));
+
+						SqlConnection.alterResults(addPlotQuery);
+
+						query = "insert into advertisement values (?, ?, ?, ?, ?, ?)";
+						PreparedStatement addAdvertisementQuery = SqlConnection.connectToDatabase()
+								.prepareStatement(query);
+						addAdvertisementQuery.setInt(1, advertisement_id);
+						addAdvertisementQuery.setString(2, selectPurpose.getSelectedItem().toString());
+						addAdvertisementQuery.setInt(3, Integer.parseInt(priceField.getText()));
+						addAdvertisementQuery.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+						addAdvertisementQuery.setInt(5, property_id);
+						addAdvertisementQuery.setString(6, cnic);
+
+						SqlConnection.alterResults(addAdvertisementQuery);
+						JOptionPane.showMessageDialog(null, "Advertisement Added Successfully!");
+						
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Please Fill all the Details!");
 				}
 			}
 		}

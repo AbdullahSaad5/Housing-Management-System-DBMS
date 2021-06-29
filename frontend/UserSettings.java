@@ -1,13 +1,7 @@
 package frontend;
 
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-
-import backend.SqlConnection;
-
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,9 +9,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.SwingConstants;
 
+import backend.SqlConnection;
+
+@SuppressWarnings("serial")
 public class UserSettings extends JPanel implements ActionListener {
 
 	JButton updateProfile, deleteAccount;
@@ -29,7 +29,7 @@ public class UserSettings extends JPanel implements ActionListener {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(10, 70, 1260, 40);
 		add(lblNewLabel);
-		
+
 		updateProfile = new JButton("Update Profile");
 		updateProfile.setBackground(new Color(56, 142, 60));
 		updateProfile.setForeground(Color.white);
@@ -38,7 +38,7 @@ public class UserSettings extends JPanel implements ActionListener {
 		updateProfile.setFocusable(false);
 		updateProfile.addActionListener(this);
 		add(updateProfile);
-		
+
 		deleteAccount = new JButton("Delete Account");
 		deleteAccount.setBackground(new Color(239, 108, 0));
 		deleteAccount.setForeground(Color.white);
@@ -50,6 +50,7 @@ public class UserSettings extends JPanel implements ActionListener {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == deleteAccount) {
@@ -61,7 +62,7 @@ public class UserSettings extends JPanel implements ActionListener {
 					verifyPassword.setString(1, Login.currentUserID);
 					verifyPassword.setString(2, getPassword.getText());
 					int count = verifyPassword.executeUpdate();
-					
+
 					if(count == 1) {
 						PreparedStatement deleteAccount = SqlConnection.connectToDatabase().prepareStatement("delete from account where username = ?");
 						deleteAccount.setString(1, Login.currentUserID);
@@ -73,7 +74,7 @@ public class UserSettings extends JPanel implements ActionListener {
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
-				
+
 			}
 		}
 		else if(e.getSource() == updateProfile) {

@@ -1,11 +1,13 @@
 package frontend;
 
-import backend.SqlConnection;
-
 import java.awt.event.MouseEvent;
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
+
+import backend.SqlConnection;
 
 @SuppressWarnings("serial")
 public class UpdateUserSettings extends SignUp {
@@ -54,6 +56,7 @@ public class UpdateUserSettings extends SignUp {
 		}
 	}
 
+	@Override
 	@SuppressWarnings("deprecation")
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource() == loginButton) {
@@ -72,7 +75,7 @@ public class UpdateUserSettings extends SignUp {
 									+ "where username = ?");
 
 					updateAccountQuery.setString(1, usernameField.getText());
-					updateAccountQuery.setString(2, passwordField.getText());;
+					updateAccountQuery.setString(2, passwordField.getText());
 					updateAccountQuery.setString(3, Login.currentUserID);
 
 					updateUserQuery.setString(1, usernameField.getText());

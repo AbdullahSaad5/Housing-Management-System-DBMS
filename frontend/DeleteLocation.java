@@ -1,13 +1,5 @@
 package frontend;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-
-import backend.SqlConnection;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -16,37 +8,49 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.swing.JTextField;
-import javax.management.Query;
 import javax.swing.JButton;
-import javax.swing.JTable;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
+import backend.SqlConnection;
+
+@SuppressWarnings("serial")
 public class DeleteLocation extends JPanel implements ActionListener {
 
 	JComboBox<String> selectType;
-	private JTextField keywordField;
-	private JTextField idField;
-	private JScrollPane mainWindow;
-	private JTextArea textArea;
-	private JButton search;
+	public JLabel mainLabel;
+	protected JTextField keywordField;
+	protected JTextField idField;
+	protected JScrollPane mainWindow;
+	protected JTextArea textArea;
+	protected JButton search, delete;
 
 	public DeleteLocation() {
 		setLayout(null);
 
-		JLabel mainLabel = new JLabel("Delete Locations");
+		mainLabel = new JLabel("Delete Locations");
 		mainLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
 		mainLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		mainLabel.setBounds(10, 42, 1260, 30);
 		add(mainLabel);
 
 		String types[] = { "Province", "City", "Location", "Colony" };
-		selectType = new JComboBox<String>(types);
-		selectType.setSelectedIndex(3);
+		selectType = new JComboBox<>(types);
+		selectType.setSelectedIndex(1);
 		selectType.addActionListener(this);
 		selectType.setBounds(570, 150, 140, 24);
 		add(selectType);
 
+		JOptionPane.showMessageDialog(null, "<html><p style: 'text-align: center'>WARNING: Deleting/Updating a location will delete/update "
+				+ "all ADVERTISEMENTS and PROPERTIES linked to it<br><br>&times; This action is IRREVERSIBLE!<br><br></p></html>");
+		
 		JLabel locationType = new JLabel("Location Type");
 		locationType.setFont(new Font("SansSerif", Font.BOLD, 14));
 		locationType.setBounds(390, 150, 130, 20);
@@ -72,22 +76,24 @@ public class DeleteLocation extends JPanel implements ActionListener {
 		idField.setBounds(570, 240, 140, 20);
 		add(idField);
 
-		JButton delete = new JButton("Delete");
+		delete = new JButton("Delete");
+		delete.addActionListener(this);
 		delete.setBounds(790, 239, 100, 23);
 		add(delete);
 
 		textArea = new JTextArea();
 		textArea.setEditable(false);
-		textArea.setBounds(390, 317, 500, 322);
+		textArea.setBounds(390, 300, 500, 300);
 
-		mainWindow = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		mainWindow = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		mainWindow.getVerticalScrollBar().setBackground(new Color(0x1E214A));
 		mainWindow.getBackground().darker();
-		mainWindow.setBounds(390, 317, 500, 322);
+		mainWindow.setBounds(390, 300, 500, 300);
 		add(mainWindow);
 
 		search = new JButton("Search");
+		search.addActionListener(this);
 		search.setBounds(790, 194, 100, 23);
 		add(search);
 
@@ -95,12 +101,16 @@ public class DeleteLocation extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == selectType) {
+		if (e.getSource() == selectType || e.getSource() == search) {
 			String query;
 			String text = "Location ID\t\t Location Name\n\n";
 			if (selectType.getSelectedIndex() == 0) {
 				try {
-					query = "select * from province order by province_id";
+					query = "select * from province";
+					if (!keywordField.getText().isBlank()) {
+						query += " where province_name like '%" + keywordField.getText() + "%'";
+					}
+					query += " order by province_id";
 					PreparedStatement getProvinces = SqlConnection.connectToDatabase().prepareStatement(query);
 					ResultSet result = getProvinces.executeQuery();
 					while (result.next()) {
@@ -114,7 +124,11 @@ public class DeleteLocation extends JPanel implements ActionListener {
 			}
 			if (selectType.getSelectedIndex() == 1) {
 				try {
-					query = "select city_id, city_name, province_name from city natural join province order by city_id";
+					query = "select city_id, city_name, province_name from city natural join province";
+					if (!keywordField.getText().isBlank()) {
+						query += " where city_name like '%" + keywordField.getText() + "%'";
+					}
+					query += " order by city_id";
 					PreparedStatement getProvinces = SqlConnection.connectToDatabase().prepareStatement(query);
 					ResultSet result = getProvinces.executeQuery();
 					while (result.next()) {
@@ -130,11 +144,16 @@ public class DeleteLocation extends JPanel implements ActionListener {
 			if (selectType.getSelectedIndex() == 2) {
 				try {
 					query = "select location_id, location_name, city_name, province_name from location natural join "
-							+ "city natural join province order by location_id";
+							+ "city natural join province";
+					if (!keywordField.getText().isBlank()) {
+						query += " where location_name like '%" + keywordField.getText() + "%'";
+					}
+					query += " order by location_id";
 					PreparedStatement getProvinces = SqlConnection.connectToDatabase().prepareStatement(query);
 					ResultSet result = getProvinces.executeQuery();
 					while (result.next()) {
-						text += result.getInt(1) + "\t\t" + result.getString(2) + ", " + result.getString(3) + ", " + result.getString(4) + "\n";
+						text += result.getInt(1) + "\t\t" + result.getString(2) + ", " + result.getString(3) + ", "
+								+ result.getString(4) + "\n";
 					}
 					textArea.setText(text);
 				} catch (SQLException e1) {
@@ -145,17 +164,68 @@ public class DeleteLocation extends JPanel implements ActionListener {
 			if (selectType.getSelectedIndex() == 3) {
 				try {
 					query = "select colony_id, colony_name, location_name, city_name, province_name from "
-							+ "colony natural join location natural join city natural join province order by colony_id";
+							+ "colony natural join location natural join city natural join province";
+					if (!keywordField.getText().isBlank()) {
+						query += " where colony_name like '%" + keywordField.getText() + "%'";
+					}
+					query += " order by colony_id";
 					PreparedStatement getProvinces = SqlConnection.connectToDatabase().prepareStatement(query);
 					ResultSet result = getProvinces.executeQuery();
 					while (result.next()) {
-						text += result.getInt(1) + "\t\t" + result.getString(2) + ", " + result.getString(3) + ", " + result.getString(4) + ", " + result.getString(5) + "\n";
+						text += result.getInt(1) + "\t\t" + result.getString(2) + ", " + result.getString(3) + ", "
+								+ result.getString(4) + ", " + result.getString(5) + "\n";
 					}
 					textArea.setText(text);
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
 
+			}
+		} else if (e.getSource() == delete) {
+			if (!idField.getText().isBlank()) {
+				if (selectType.getSelectedIndex() == 0) {
+					try {
+						PreparedStatement deleteID = SqlConnection.connectToDatabase()
+								.prepareStatement("delete from province where province_id = ?");
+						deleteID.setInt(1, Integer.parseInt(idField.getText()));
+						deleteID.executeUpdate();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+					}
+				} else if (selectType.getSelectedIndex() == 1) {
+					try {
+						PreparedStatement deleteID = SqlConnection.connectToDatabase()
+								.prepareStatement("delete from city where city_id = ?");
+						deleteID.setInt(1, Integer.parseInt(idField.getText()));
+						deleteID.executeUpdate();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+					}
+				} else if (selectType.getSelectedIndex() == 2) {
+					try {
+						PreparedStatement deleteID = SqlConnection.connectToDatabase()
+								.prepareStatement("delete from location where location_id = ?");
+						deleteID.setInt(1, Integer.parseInt(idField.getText()));
+						deleteID.executeUpdate();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+					}
+				} else if (selectType.getSelectedIndex() == 3) {
+					try {
+						PreparedStatement deleteID = SqlConnection.connectToDatabase()
+								.prepareStatement("delete from colony where colony_id = ?");
+						deleteID.setInt(1, Integer.parseInt(idField.getText()));
+						deleteID.executeUpdate();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+					}
+				}
+			} else {
+				JOptionPane.showMessageDialog(null, "No ID entered.");
 			}
 		}
 
