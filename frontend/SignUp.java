@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,7 +41,7 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 		mainTitle = new JLabel("   Housing Management System");
 		mainTitle.setBounds(10, 32, 440, 66);
 		mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		mainTitle.setIcon(new ImageIcon(Login.class.getResource("/images/house.png")));
+		mainTitle.setIcon(new ImageIcon(Objects.requireNonNull(Login.class.getResource("/images/house.png"))));
 		mainTitle.setFont(new Font("SansSerif", Font.BOLD, 20));
 		add(mainTitle);
 
@@ -222,7 +223,7 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 						Template.changePanel(new Login());
 					}
 				} catch (Exception e1) {
-					JOptionPane.showMessageDialog(null, "An error occured while processing your information. Please try again!");
+					JOptionPane.showMessageDialog(null, "An error occurred while processing your information. Please try again!");
 					e1.printStackTrace();
 				}
 			}

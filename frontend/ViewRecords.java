@@ -1,7 +1,11 @@
 package frontend;
 
+import backend.SqlConnection;
+
 import java.awt.Color;
 import java.awt.Font;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,6 +40,13 @@ public class ViewRecords extends JPanel {
 		mainWindow.getBackground().darker();
 		mainWindow.setBounds(100, 160, 1080, 400);
 		add(mainWindow);
+
+
+		try {
+			PreparedStatement records = SqlConnection.connectToDatabase().prepareStatement("select");
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 
 		JLabel keyword = new JLabel("Keyword:");
 		keyword.setHorizontalAlignment(SwingConstants.TRAILING);
