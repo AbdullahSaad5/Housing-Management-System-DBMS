@@ -29,6 +29,7 @@ public class BrowseHouses extends JPanel implements ActionListener {
 	static ArrayList<Ad> array = new ArrayList<>();
 	JButton next, prev;
 	private final JButton[] buttons = new JButton[4];
+	String query;
 
 	public BrowseHouses() {
 
@@ -45,14 +46,14 @@ public class BrowseHouses extends JPanel implements ActionListener {
 
 		next = new JButton("");
 		next.addActionListener(this);
-		next.setIcon(new ImageIcon(BrowsePlots.class.getResource("/images/next.png")));
+		next.setIcon(new ImageIcon(Objects.requireNonNull(BrowsePlots.class.getResource("/images/next.png"))));
 		next.setBackground(null);
 		next.setBounds(735, 30, 40, 40);
 		add(next);
 
 		prev = new JButton("");
 		prev.addActionListener(this);
-		prev.setIcon(new ImageIcon(BrowsePlots.class.getResource("/images/prev.png")));
+		prev.setIcon(new ImageIcon(Objects.requireNonNull(BrowsePlots.class.getResource("/images/prev.png"))));
 		prev.setBackground(null);
 		prev.setBounds(515, 30, 40, 40);
 		add(prev);
@@ -63,7 +64,7 @@ public class BrowseHouses extends JPanel implements ActionListener {
 		pageCount.setBounds(573, 72, 144, 40);
 		add(pageCount);
 
-		String query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
+		query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
 				+ " province_name, house_bedrooms, house_bathrooms, house_stories, house_area, advertisement_id"
 				+ " from advertisement natural join property natural join colony natural join location natural join"
 				+ " city natural join province natural join house natural join users where username != ? and " +
@@ -88,6 +89,9 @@ public class BrowseHouses extends JPanel implements ActionListener {
 			totalPages = (totalCount / 4) + 1;
 		} else {
 			totalPages = (totalCount / 4);
+		}
+		if(totalPages == 0){
+			totalPages = 1;
 		}
 
 		titleLabel.setText(String.valueOf( "Page: " + pageNumber) + "/" + String.valueOf(totalPages));
@@ -197,7 +201,7 @@ public class BrowseHouses extends JPanel implements ActionListener {
 		}
 	}
 
-	public void buyAdvertisement(int advertisement_id){
+	public static void buyAdvertisement(int advertisement_id){
 		try {
 			String CNIC_Query = "select CNIC from users where username = ?";
 			PreparedStatement stmt = SqlConnection.connectToDatabase().prepareStatement(CNIC_Query);

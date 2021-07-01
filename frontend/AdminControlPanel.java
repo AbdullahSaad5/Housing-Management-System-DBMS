@@ -1,6 +1,7 @@
 package frontend;
 
 import backend.SqlConnection;
+import backend.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -293,24 +294,31 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 				}
 				if(total == 0) {
 					if (!newLocation.getText().isBlank()) {
-						try {
-							PreparedStatement totalProvince = SqlConnection.connectToDatabase().prepareStatement(
-									"select max(province_id) from province");
-							ResultSet result = totalProvince.executeQuery();
-							int count = 0;
-							while (result.next()) {
-								count = result.getInt(1);
-							}
-							PreparedStatement addProvince = SqlConnection.connectToDatabase()
-									.prepareStatement("insert into province values (?, ?)");
-							addProvince.setInt(1, ++count);
-							addProvince.setString(2, newLocation.getText());
-							addProvince.executeUpdate();
-							JOptionPane.showMessageDialog(null, "Province Added to Database!");
-						} catch (SQLException e1) {
-							e1.printStackTrace();
+						if(!Utilities.checkStringWithSpaces(newLocation.getText())){
+							JOptionPane.showMessageDialog(null, "Name can have letters and spaces only!");
 						}
-
+						else {
+							try {
+								PreparedStatement totalProvince = SqlConnection.connectToDatabase().prepareStatement(
+										"select max(province_id) from province");
+								ResultSet result = totalProvince.executeQuery();
+								int count = 0;
+								while (result.next()) {
+									count = result.getInt(1);
+								}
+								PreparedStatement addProvince = SqlConnection.connectToDatabase()
+										.prepareStatement("insert into province values (?, ?)");
+								addProvince.setInt(1, ++count);
+								addProvince.setString(2, newLocation.getText());
+								addProvince.executeUpdate();
+								JOptionPane.showMessageDialog(null, "Province Added to Database!");
+							} catch (SQLException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+					else{
+						JOptionPane.showMessageDialog(null, "New Location Entry is Blank. Try Again!");
 					}
 				}
 				else{
@@ -327,35 +335,42 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 				}
 				if(total == 0) {
 				if (!newLocation.getText().isBlank()) {
-					try {
-						PreparedStatement totalCity = SqlConnection.connectToDatabase().prepareStatement(
-								"select max(city_id) from city");
-						PreparedStatement provinceID = SqlConnection.connectToDatabase()
-								.prepareStatement("select province_id from province where province_name = ?");
-						provinceID.setString(1, Objects.requireNonNull(selectProvince.getSelectedItem()).toString());
-						System.out.println(selectProvince.getSelectedItem().toString());
-
-						ResultSet result = totalCity.executeQuery();
-						int count = 0;
-						while (result.next()) {
-							count = result.getInt(1);
-						}
-
-						result = provinceID.executeQuery();
-						int province_id = 0;
-						while (result.next()) {
-							province_id = result.getInt(1);
-						}
-						PreparedStatement addCity = SqlConnection.connectToDatabase()
-								.prepareStatement("insert into city values (?, ?, ?)");
-						addCity.setInt(1, ++count);
-						addCity.setString(2, newLocation.getText());
-						addCity.setInt(3, province_id);
-						addCity.executeUpdate();
-						JOptionPane.showMessageDialog(null, "City Added to Database!");
-					} catch (SQLException e1) {
-						e1.printStackTrace();
+					if(!Utilities.checkStringWithSpaces(newLocation.getText())){
+						JOptionPane.showMessageDialog(null, "Name can have letters and spaces only!");
 					}
+					else {
+						try {
+							PreparedStatement totalCity = SqlConnection.connectToDatabase().prepareStatement(
+									"select max(city_id) from city");
+							PreparedStatement provinceID = SqlConnection.connectToDatabase()
+									.prepareStatement("select province_id from province where province_name = ?");
+							provinceID.setString(1, Objects.requireNonNull(selectProvince.getSelectedItem()).toString());
+							System.out.println(selectProvince.getSelectedItem().toString());
+
+							ResultSet result = totalCity.executeQuery();
+							int count = 0;
+							while (result.next()) {
+								count = result.getInt(1);
+							}
+
+							result = provinceID.executeQuery();
+							int province_id = 0;
+							while (result.next()) {
+								province_id = result.getInt(1);
+							}
+							PreparedStatement addCity = SqlConnection.connectToDatabase()
+									.prepareStatement("insert into city values (?, ?, ?)");
+							addCity.setInt(1, ++count);
+							addCity.setString(2, newLocation.getText());
+							addCity.setInt(3, province_id);
+							addCity.executeUpdate();
+							JOptionPane.showMessageDialog(null, "City Added to Database!");
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "New Location Entry is Blank. Try Again!");
 				}
 				}else{
 					JOptionPane.showMessageDialog(null, "City already exists!");
@@ -372,35 +387,42 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 					if(total == 0) {
 
 						if (!newLocation.getText().isBlank()) {
-							try {
-								PreparedStatement totalLocation = SqlConnection.connectToDatabase().prepareStatement(
-										"select max(location_id) from location");
-								PreparedStatement cityID = SqlConnection.connectToDatabase()
-										.prepareStatement("select city_id from city where city_name = ?");
-								cityID.setString(1, Objects.requireNonNull(selectCity.getSelectedItem()).toString());
+							if(!Utilities.checkStringWithSpaces(newLocation.getText())){
+								JOptionPane.showMessageDialog(null, "Name can have letters and spaces only!");
+							}
+							else {
+								try {
+									PreparedStatement totalLocation = SqlConnection.connectToDatabase().prepareStatement(
+											"select max(location_id) from location");
+									PreparedStatement cityID = SqlConnection.connectToDatabase()
+											.prepareStatement("select city_id from city where city_name = ?");
+									cityID.setString(1, Objects.requireNonNull(selectCity.getSelectedItem()).toString());
 
-								ResultSet result = totalLocation.executeQuery();
-								int count = 0;
-								while (result.next()) {
-									count = result.getInt(1);
-								}
+									ResultSet result = totalLocation.executeQuery();
+									int count = 0;
+									while (result.next()) {
+										count = result.getInt(1);
+									}
 
-								result = cityID.executeQuery();
-								int city_id = 0;
-								while (result.next()) {
-									city_id = result.getInt(1);
+									result = cityID.executeQuery();
+									int city_id = 0;
+									while (result.next()) {
+										city_id = result.getInt(1);
+									}
+									PreparedStatement addCity = SqlConnection.connectToDatabase()
+											.prepareStatement("insert into location values (?, ?, ?)");
+									addCity.setInt(1, ++count);
+									addCity.setString(2, newLocation.getText());
+									addCity.setInt(3, city_id);
+									addCity.executeUpdate();
+									JOptionPane.showMessageDialog(null, "Location Added to Database!");
+								} catch (SQLException e1) {
+									e1.printStackTrace();
 								}
-								PreparedStatement addCity = SqlConnection.connectToDatabase()
-										.prepareStatement("insert into location values (?, ?, ?)");
-								addCity.setInt(1, ++count);
-								addCity.setString(2, newLocation.getText());
-								addCity.setInt(3, city_id);
-								addCity.executeUpdate();
-								JOptionPane.showMessageDialog(null, "Location Added to Database!");
-							} catch (SQLException e1) {
-								e1.printStackTrace();
 							}
 
+						}else {
+							JOptionPane.showMessageDialog(null, "New Location Entry is Blank. Try Again!");
 						}
 					}else{
 						JOptionPane.showMessageDialog(null, "Location already exists!");
@@ -416,35 +438,41 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 					}
 					if(total == 0) {
 						if (!newLocation.getText().isBlank()) {
-							try {
-								PreparedStatement totalColony = SqlConnection.connectToDatabase().prepareStatement(
-										"sselect max(colony_id) from colony");
-								PreparedStatement locationID = SqlConnection.connectToDatabase()
-										.prepareStatement("select location_id from location where location_name = ?");
-								locationID.setString(1, Objects.requireNonNull(selectLocation.getSelectedItem()).toString());
-
-								ResultSet result = totalColony.executeQuery();
-								int count = 0;
-								while (result.next()) {
-									count = result.getInt(1);
-								}
-
-								result = locationID.executeQuery();
-								int location_id = 0;
-								while (result.next()) {
-									location_id = result.getInt(1);
-								}
-								PreparedStatement addColony = SqlConnection.connectToDatabase()
-										.prepareStatement("insert into colony values (?, ?, ?)");
-								addColony.setInt(1, ++count);
-								addColony.setString(2, newLocation.getText());
-								addColony.setInt(3, location_id);
-								addColony.executeUpdate();
-								JOptionPane.showMessageDialog(null, "Colony Added to Database!");
-							} catch (SQLException e1) {
-								e1.printStackTrace();
+							if(!Utilities.checkStringWithSpaces(newLocation.getText())){
+								JOptionPane.showMessageDialog(null, "Name can have letters and spaces only!");
 							}
+							else {
+								try {
+									PreparedStatement totalColony = SqlConnection.connectToDatabase().prepareStatement(
+											"sselect max(colony_id) from colony");
+									PreparedStatement locationID = SqlConnection.connectToDatabase()
+											.prepareStatement("select location_id from location where location_name = ?");
+									locationID.setString(1, Objects.requireNonNull(selectLocation.getSelectedItem()).toString());
 
+									ResultSet result = totalColony.executeQuery();
+									int count = 0;
+									while (result.next()) {
+										count = result.getInt(1);
+									}
+
+									result = locationID.executeQuery();
+									int location_id = 0;
+									while (result.next()) {
+										location_id = result.getInt(1);
+									}
+									PreparedStatement addColony = SqlConnection.connectToDatabase()
+											.prepareStatement("insert into colony values (?, ?, ?)");
+									addColony.setInt(1, ++count);
+									addColony.setString(2, newLocation.getText());
+									addColony.setInt(3, location_id);
+									addColony.executeUpdate();
+									JOptionPane.showMessageDialog(null, "Colony Added to Database!");
+								} catch (SQLException e1) {
+									e1.printStackTrace();
+								}
+							}
+						}else {
+							JOptionPane.showMessageDialog(null, "New Location Entry is Blank. Try Again!");
 						}
 					}
 					else{

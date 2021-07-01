@@ -22,6 +22,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import backend.SqlConnection;
+import backend.Utilities;
 
 public class SignUp extends JPanel implements MouseListener, ActionListener {
 
@@ -180,47 +181,69 @@ public class SignUp extends JPanel implements MouseListener, ActionListener {
 					&& phoneField.getText().length() != 0) {
 
 				try {
-					PreparedStatement checkUsernameQuery = SqlConnection.connectToDatabase()
-							.prepareStatement("select * from account where username = ?");
-
-					PreparedStatement checkCNICQuery = SqlConnection.connectToDatabase()
-							.prepareStatement("select * from users where CNIC = ?");
-
-					PreparedStatement addAccountQuery = SqlConnection.connectToDatabase()
-							.prepareStatement("insert into account values(?, ?, ?, ?)");
-
-					PreparedStatement addUserQuery = SqlConnection.connectToDatabase()
-							.prepareStatement("insert into users values(?, ?, ?, ?, ?, ?, ?, ?)");
-
-					addAccountQuery.setString(1, usernameField.getText());
-					addAccountQuery.setString(2, passwordField.getText());
-					addAccountQuery.setString(3, "N");
-					addAccountQuery.setString(4, "user");
-
-					addUserQuery.setString(1, usernameField.getText());
-					addUserQuery.setString(2, firstnameField.getText());
-					addUserQuery.setString(3, lastnameField.getText());
-					addUserQuery.setString(4, genderBox.getSelectedItem().toString());
-					addUserQuery.setString(5, CNIC_Field.getText());
-					addUserQuery.setString(6, emailField.getText());
-					addUserQuery.setString(7, homeField.getText());
-					addUserQuery.setString(8, phoneField.getText());
-
-					checkUsernameQuery.setString(1, usernameField.getText());
-					checkCNICQuery.setString(1, CNIC_Field.getText());
-
-
-					if (SqlConnection.alterResults(checkUsernameQuery) != 0) {
-						JOptionPane.showMessageDialog(null, "Username already registered. Try another one.");
-					} else if(SqlConnection.alterResults(checkCNICQuery) != 0) {
-						JOptionPane.showMessageDialog(null, "CNIC already in use. Try another one.");
-
+					if(!Utilities.checkUsername(usernameField.getText())){
+						JOptionPane.showMessageDialog(null, "Username must contain letters and digits only!");
 					}
-						else {
-						SqlConnection.alterResults(addAccountQuery);
-						SqlConnection.alterResults(addUserQuery);
-						JOptionPane.showMessageDialog(null, "User Registered Successfully");
-						Template.changePanel(new Login());
+					else if(!Utilities.checkUsername(passwordField.getText())){
+						JOptionPane.showMessageDialog(null, "Password must contain letters and digits only!");
+					}
+					else if(!Utilities.checkStringWithSpaces(firstnameField.getText())){
+						JOptionPane.showMessageDialog(null, "First Name must contain letters and spaces only!");
+					}
+					else if(!Utilities.checkStringWithSpaces(lastnameField.getText())){
+						JOptionPane.showMessageDialog(null, "Last Name must contain letters and spaces only!");
+					}
+					else if(!Utilities.checkNumber(CNIC_Field.getText())){
+						JOptionPane.showMessageDialog(null, "CNIC must contain digits only!");
+					}
+					else if(!Utilities.checkStringWithSpaces(homeField.getText())){
+						JOptionPane.showMessageDialog(null, "Address must contain letters,digits and spaces only!");
+					}
+					else if(!Utilities.checkNumber(phoneField.getText())){
+						JOptionPane.showMessageDialog(null, "Phone Number must contain letters only!");
+					}
+					else {
+						PreparedStatement checkUsernameQuery = SqlConnection.connectToDatabase()
+								.prepareStatement("select * from account where username = ?");
+
+						PreparedStatement checkCNICQuery = SqlConnection.connectToDatabase()
+								.prepareStatement("select * from users where CNIC = ?");
+
+						PreparedStatement addAccountQuery = SqlConnection.connectToDatabase()
+								.prepareStatement("insert into account values(?, ?, ?, ?)");
+
+						PreparedStatement addUserQuery = SqlConnection.connectToDatabase()
+								.prepareStatement("insert into users values(?, ?, ?, ?, ?, ?, ?, ?)");
+
+						addAccountQuery.setString(1, usernameField.getText());
+						addAccountQuery.setString(2, passwordField.getText());
+						addAccountQuery.setString(3, "N");
+						addAccountQuery.setString(4, "user");
+
+						addUserQuery.setString(1, usernameField.getText());
+						addUserQuery.setString(2, firstnameField.getText());
+						addUserQuery.setString(3, lastnameField.getText());
+						addUserQuery.setString(4, genderBox.getSelectedItem().toString());
+						addUserQuery.setString(5, CNIC_Field.getText());
+						addUserQuery.setString(6, emailField.getText());
+						addUserQuery.setString(7, homeField.getText());
+						addUserQuery.setString(8, phoneField.getText());
+
+						checkUsernameQuery.setString(1, usernameField.getText());
+						checkCNICQuery.setString(1, CNIC_Field.getText());
+
+
+						if (SqlConnection.alterResults(checkUsernameQuery) != 0) {
+							JOptionPane.showMessageDialog(null, "Username already registered. Try another one.");
+						} else if (SqlConnection.alterResults(checkCNICQuery) != 0) {
+							JOptionPane.showMessageDialog(null, "CNIC already in use. Try another one.");
+
+						} else {
+							SqlConnection.alterResults(addAccountQuery);
+							SqlConnection.alterResults(addUserQuery);
+							JOptionPane.showMessageDialog(null, "User Registered Successfully");
+							Template.changePanel(new Login());
+						}
 					}
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, "An error occurred while processing your information. Please try again!");

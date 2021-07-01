@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import backend.SqlConnection;
+import backend.Utilities;
 
 public class UpdateLocation extends DeleteLocation {
 	JTextField newName;
@@ -33,52 +34,56 @@ public class UpdateLocation extends DeleteLocation {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == delete) {
 			if (!idField.getText().isBlank()) {
-				if (selectType.getSelectedIndex() == 0) {
-					try {
-						PreparedStatement updateName = SqlConnection.connectToDatabase()
-								.prepareStatement("update province set province_name = ? where province_id = ?");
-						updateName.setString(1, newName.getText());
-						updateName.setInt(2, Integer.parseInt(idField.getText()));
-						updateName.executeUpdate();
-					} catch (Exception e1) {
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
-					}
-				} else if (selectType.getSelectedIndex() == 1) {
-					try {
-						PreparedStatement updateName = SqlConnection.connectToDatabase()
-								.prepareStatement("update city set city_name = ? where city_id = ?");
-						updateName.setString(1, newName.getText());
-						updateName.setInt(2, Integer.parseInt(idField.getText()));
-						updateName.executeUpdate();
-					} catch (Exception e1) {
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
-					}
-				} else if (selectType.getSelectedIndex() == 2) {
-					try {
-						PreparedStatement updateName = SqlConnection.connectToDatabase()
-								.prepareStatement("update location set location_name = ? where location_id = ?");
-						updateName.setString(1, newName.getText());
-						updateName.setInt(2, Integer.parseInt(idField.getText()));
-						updateName.executeUpdate();
-					} catch (Exception e1) {
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
-					}
-				} else if (selectType.getSelectedIndex() == 3) {
-					try {
-						PreparedStatement updateName = SqlConnection.connectToDatabase()
-								.prepareStatement("update colony set colony_name = ? where colony_id = ?");
-						updateName.setString(1, newName.getText());
-						updateName.setInt(2, Integer.parseInt(idField.getText()));
-						updateName.executeUpdate();
-					} catch (Exception e1) {
-						e1.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+				if(!Utilities.checkStringWithSpaces(newName.getText())){
+					JOptionPane.showMessageDialog(null, "Name must include letters and spaces only!");
+				}
+				else {
+					if (selectType.getSelectedIndex() == 0) {
+						try {
+							PreparedStatement updateName = SqlConnection.connectToDatabase()
+									.prepareStatement("update province set province_name = ? where province_id = ?");
+							updateName.setString(1, newName.getText());
+							updateName.setInt(2, Integer.parseInt(idField.getText()));
+							updateName.executeUpdate();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+						}
+					} else if (selectType.getSelectedIndex() == 1) {
+						try {
+							PreparedStatement updateName = SqlConnection.connectToDatabase()
+									.prepareStatement("update city set city_name = ? where city_id = ?");
+							updateName.setString(1, newName.getText());
+							updateName.setInt(2, Integer.parseInt(idField.getText()));
+							updateName.executeUpdate();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+						}
+					} else if (selectType.getSelectedIndex() == 2) {
+						try {
+							PreparedStatement updateName = SqlConnection.connectToDatabase()
+									.prepareStatement("update location set location_name = ? where location_id = ?");
+							updateName.setString(1, newName.getText());
+							updateName.setInt(2, Integer.parseInt(idField.getText()));
+							updateName.executeUpdate();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+						}
+					} else if (selectType.getSelectedIndex() == 3) {
+						try {
+							PreparedStatement updateName = SqlConnection.connectToDatabase()
+									.prepareStatement("update colony set colony_name = ? where colony_id = ?");
+							updateName.setString(1, newName.getText());
+							updateName.setInt(2, Integer.parseInt(idField.getText()));
+							updateName.executeUpdate();
+						} catch (Exception e1) {
+							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, "Invalid ID entered. Please Try Again");
+						}
 					}
 				}
-
 			} else {
 				JOptionPane.showMessageDialog(null, "No ID entered.");
 			}

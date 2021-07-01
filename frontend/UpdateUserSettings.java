@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 import backend.SqlConnection;
+import backend.Utilities;
 
 @SuppressWarnings("serial")
 public class UpdateUserSettings extends SignUp {
@@ -66,32 +67,48 @@ public class UpdateUserSettings extends SignUp {
 					&& phoneField.getText().length() != 0) {
 
 				try {
-					PreparedStatement updateAccountQuery = SqlConnection.connectToDatabase()
-							.prepareStatement("update account set username = ?, password = ? where username = ?");
+					if (!Utilities.checkUsername(usernameField.getText())) {
+						JOptionPane.showMessageDialog(null, "Username must contain letters and digits only!");
+					} else if (!Utilities.checkUsername(passwordField.getText())) {
+						JOptionPane.showMessageDialog(null, "Password must contain letters and digits only!");
+					} else if (!Utilities.checkStringWithSpaces(firstnameField.getText())) {
+						JOptionPane.showMessageDialog(null, "First Name must contain letters and spaces only!");
+					} else if (!Utilities.checkStringWithSpaces(lastnameField.getText())) {
+						JOptionPane.showMessageDialog(null, "Last Name must contain letters and spaces only!");
+					} else if (!Utilities.checkNumber(CNIC_Field.getText())) {
+						JOptionPane.showMessageDialog(null, "CNIC must contain digits only!");
+					} else if (!Utilities.checkStringWithSpaces(homeField.getText())) {
+						JOptionPane.showMessageDialog(null, "Address must contain letters,digits and spaces only!");
+					} else if (!Utilities.checkNumber(phoneField.getText())) {
+						JOptionPane.showMessageDialog(null, "Phone Number must contain letters only!");
+					} else {
+						PreparedStatement updateAccountQuery = SqlConnection.connectToDatabase()
+								.prepareStatement("update account set username = ?, password = ? where username = ?");
 
-					PreparedStatement updateUserQuery = SqlConnection.connectToDatabase()
-							.prepareStatement("update users set username = ?, first_name = ?, last_name = ?,"
-									+ " gender = ?, CNIC = ?, email_address = ?, home_address = ?, phone_number = ? "
-									+ "where username = ?");
+						PreparedStatement updateUserQuery = SqlConnection.connectToDatabase()
+								.prepareStatement("update users set username = ?, first_name = ?, last_name = ?,"
+										+ " gender = ?, CNIC = ?, email_address = ?, home_address = ?, phone_number = ? "
+										+ "where username = ?");
 
-					updateAccountQuery.setString(1, usernameField.getText());
-					updateAccountQuery.setString(2, passwordField.getText());
-					updateAccountQuery.setString(3, Login.currentUserID);
+						updateAccountQuery.setString(1, usernameField.getText());
+						updateAccountQuery.setString(2, passwordField.getText());
+						updateAccountQuery.setString(3, Login.currentUserID);
 
-					updateUserQuery.setString(1, usernameField.getText());
-					updateUserQuery.setString(2, firstnameField.getText());
-					updateUserQuery.setString(3, lastnameField.getText());
-					updateUserQuery.setString(4, genderBox.getSelectedItem().toString());
-					updateUserQuery.setString(5, CNIC_Field.getText());
-					updateUserQuery.setString(6, emailField.getText());
-					updateUserQuery.setString(7, homeField.getText());
-					updateUserQuery.setString(8, phoneField.getText());
-					updateUserQuery.setString(9, Login.currentUserID);
+						updateUserQuery.setString(1, usernameField.getText());
+						updateUserQuery.setString(2, firstnameField.getText());
+						updateUserQuery.setString(3, lastnameField.getText());
+						updateUserQuery.setString(4, genderBox.getSelectedItem().toString());
+						updateUserQuery.setString(5, CNIC_Field.getText());
+						updateUserQuery.setString(6, emailField.getText());
+						updateUserQuery.setString(7, homeField.getText());
+						updateUserQuery.setString(8, phoneField.getText());
+						updateUserQuery.setString(9, Login.currentUserID);
 
-					SqlConnection.alterResults(updateAccountQuery);
-					SqlConnection.alterResults(updateUserQuery);
-					JOptionPane.showMessageDialog(null, "Data Updated Successfully");
-				} catch (SQLException e1) {
+						SqlConnection.alterResults(updateAccountQuery);
+						SqlConnection.alterResults(updateUserQuery);
+						JOptionPane.showMessageDialog(null, "Data Updated Successfully");
+					}
+				}catch (SQLException e1) {
 					JOptionPane.showMessageDialog(null, "An error occured while processing your information. Please try again!");
 					e1.printStackTrace();
 				}
@@ -101,5 +118,4 @@ public class UpdateUserSettings extends SignUp {
 			}
 		}
 }
-
 }

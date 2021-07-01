@@ -24,13 +24,14 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import backend.SqlConnection;
+import backend.Utilities;
 
 @SuppressWarnings("serial")
 public class UserDashboard extends JPanel implements ActionListener {
 	private JLabel bedroomsText, bathroomsText, storiesText, purposeText;
 	private JTextField areaField, priceField, bedroomField, bathroomField, storyField;
 	private JComboBox<String> selectProvince, selectCity, selectLocation, selectColony, selectType, selectPurpose;
-	private JButton postAd, addAdvertisment, houses, plots, filters, agents, userSettings, logout;
+	private JButton postAd, addAdvertisment, houses, plots, filters, agents, userSettings, logout, myAds;
 	ArrayList<String> provinceList;
 	static JPanel currentPanel;
 	static JPanel contentPanel;
@@ -114,6 +115,17 @@ public class UserDashboard extends JPanel implements ActionListener {
 		userSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
 		userSettings.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(userSettings);
+
+		myAds = new JButton("My Ads");
+		myAds.addActionListener(this);
+		myAds.setFocusable(false);
+		myAds.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		myAds.setPreferredSize(new Dimension(100, 60));
+		myAds.setBackground(new Color(255, 255, 255));
+		myAds.setIcon(new ImageIcon(UserDashboard.class.getResource("/images/advertisement.png")));
+		myAds.setVerticalTextPosition(SwingConstants.BOTTOM);
+		myAds.setHorizontalTextPosition(SwingConstants.CENTER);
+		controlPanel.add(myAds);
 
 		logout = new JButton("Logout");
 		logout.addActionListener(this);
@@ -316,7 +328,7 @@ public class UserDashboard extends JPanel implements ActionListener {
 		} else if (ac.getSource() == plots) {
 			replaceContentPanel(new BrowsePlots());
 		} else if (ac.getSource() == agents) {
-			replaceContentPanel(new UserSettings());
+			replaceContentPanel(new ViewAgents());
 		} else if (ac.getSource() == logout) {
 			Template.mainFrame.setSize(460, 640);
 			Template.changePanel(new Login());
@@ -324,79 +336,94 @@ public class UserDashboard extends JPanel implements ActionListener {
 			Template.changePanel(new UserDashboard());
 		} else if (ac.getSource() == userSettings) {
 			replaceContentPanel(new UserSettings());
-		} else if (ac.getSource() == postAd) {
+		} else if(ac.getSource() == myAds){
+			replaceContentPanel(new ViewOwnAds());
+		}
+		else if (ac.getSource() == postAd) {
 			if (selectType.getSelectedIndex() == 1) {
-				if (!(priceField.getText().isBlank() && areaField.getText().isBlank() && priceField.getText().isBlank()
+				if (!(priceField.getText().isBlank() && areaField.getText().isBlank()
 						&& bedroomField.getText().isBlank() && bathroomField.getText().isBlank()
 						&& storyField.getText().isBlank()) && selectCity.getSelectedItem() != null
 						&& selectProvince.getSelectedItem() != null && selectLocation.getSelectedItem() != null
 						&& selectColony.getSelectedItem() != null && selectPurpose != null) {
 					try {
 
-						PreparedStatement getColonyID = SqlConnection.connectToDatabase()
-								.prepareStatement("select colony_id from colony natural join "
-										+ "location natural join city natural join province where colony_name = ? and location_name = ? "
-										+ "and city_name = ? and province_name = ?");
-						getColonyID.setString(1, selectColony.getSelectedItem().toString());
-						getColonyID.setString(2, selectLocation.getSelectedItem().toString());
-						getColonyID.setString(3, selectCity.getSelectedItem().toString());
-						getColonyID.setString(4, selectProvince.getSelectedItem().toString());
+						if (!Utilities.checkNumber(priceField.getText())) {
+							JOptionPane.showMessageDialog(null, "Price must be a number only");
+						} else if (!Utilities.checkNumber(areaField.getText())) {
+							JOptionPane.showMessageDialog(null, "Area must be a number only");
+						} else if (!Utilities.checkNumber(bedroomField.getText())) {
+							JOptionPane.showMessageDialog(null, "Bedroom must be a number only");
+						} else if (!Utilities.checkNumber(bathroomField.getText())) {
+							JOptionPane.showMessageDialog(null, "Bathroom must be a number only");
+						} else if (!Utilities.checkNumber(storyField.getText())) {
+							JOptionPane.showMessageDialog(null, "Stories must be a number only");
+						} else {
+							PreparedStatement getColonyID = SqlConnection.connectToDatabase()
+									.prepareStatement("select colony_id from colony natural join "
+											+ "location natural join city natural join province where colony_name = ? and location_name = ? "
+											+ "and city_name = ? and province_name = ?");
+							getColonyID.setString(1, selectColony.getSelectedItem().toString());
+							getColonyID.setString(2, selectLocation.getSelectedItem().toString());
+							getColonyID.setString(3, selectCity.getSelectedItem().toString());
+							getColonyID.setString(4, selectProvince.getSelectedItem().toString());
 
-						ResultSet result = getColonyID.executeQuery();
-						result.next();
-						int colony_id = result.getInt(1);
+							ResultSet result = getColonyID.executeQuery();
+							result.next();
+							int colony_id = result.getInt(1);
 
-						PreparedStatement userCNIC = SqlConnection.connectToDatabase()
-								.prepareStatement("select CNIC from users where username = ?");
-						userCNIC.setString(1, Login.currentUserID);
-						result = userCNIC.executeQuery();
-						result.next();
-						String cnic = result.getString(1);
+							PreparedStatement userCNIC = SqlConnection.connectToDatabase()
+									.prepareStatement("select CNIC from users where username = ?");
+							userCNIC.setString(1, Login.currentUserID);
+							result = userCNIC.executeQuery();
+							result.next();
+							String cnic = result.getString(1);
 
-						PreparedStatement idQuery = SqlConnection.connectToDatabase().prepareStatement(
-								"select advertisement_id from advertisement where advertisement_id = (select max(advertisement_id) from advertisement)");
-						ResultSet queryResult = SqlConnection.findResult(idQuery);
-						int count = 0;
-						while (queryResult.next()) {
-							count = queryResult.getInt(1);
+							PreparedStatement idQuery = SqlConnection.connectToDatabase().prepareStatement(
+									"select advertisement_id from advertisement where advertisement_id = (select max(advertisement_id) from advertisement)");
+							ResultSet queryResult = SqlConnection.findResult(idQuery);
+							int count = 0;
+							while (queryResult.next()) {
+								count = queryResult.getInt(1);
+							}
+							int property_id = ++count;
+							int advertisement_id = property_id;
+
+							String query = "insert into property values (?, ?, ?)";
+							PreparedStatement addPropertyQuery = SqlConnection.connectToDatabase().prepareStatement(query);
+							addPropertyQuery.setInt(1, property_id);
+							addPropertyQuery.setInt(2, colony_id);
+							addPropertyQuery.setString(3, "house");
+
+							SqlConnection.alterResults(addPropertyQuery);
+
+							query = "insert into house values (?, ?, ?, ?, ?, ?)";
+							PreparedStatement addHouseQuery = SqlConnection.connectToDatabase().prepareStatement(query);
+							addHouseQuery.setInt(1, property_id);
+							addHouseQuery.setInt(2, Integer.parseInt(areaField.getText()));
+							addHouseQuery.setInt(3, Integer.parseInt(bedroomField.getText()));
+							addHouseQuery.setInt(4, Integer.parseInt(bathroomField.getText()));
+							addHouseQuery.setInt(5, Integer.parseInt(storyField.getText()));
+							addHouseQuery.setString(6, selectPurpose.getSelectedItem().toString());
+
+							SqlConnection.alterResults(addHouseQuery);
+
+							query = "insert into advertisement values (?, ?, ?, ?, ?, ?)";
+							PreparedStatement addAdvertisementQuery = SqlConnection.connectToDatabase()
+									.prepareStatement(query);
+							addAdvertisementQuery.setInt(1, advertisement_id);
+							addAdvertisementQuery.setString(2, selectPurpose.getSelectedItem().toString());
+							addAdvertisementQuery.setInt(3, Integer.parseInt(priceField.getText()));
+							addAdvertisementQuery.setDate(4, new java.sql.Date(System.currentTimeMillis()));
+							addAdvertisementQuery.setInt(5, property_id);
+							addAdvertisementQuery.setString(6, cnic);
+
+							SqlConnection.alterResults(addAdvertisementQuery);
+							JOptionPane.showMessageDialog(null, "Advertisement Added Successfully!");
 						}
-						int property_id = ++count;
-						int advertisement_id = property_id;
-
-						String query = "insert into property values (?, ?, ?)";
-						PreparedStatement addPropertyQuery = SqlConnection.connectToDatabase().prepareStatement(query);
-						addPropertyQuery.setInt(1, property_id);
-						addPropertyQuery.setInt(2, colony_id);
-						addPropertyQuery.setString(3, "house");
-
-						SqlConnection.alterResults(addPropertyQuery);
-
-						query = "insert into house values (?, ?, ?, ?, ?, ?)";
-						PreparedStatement addHouseQuery = SqlConnection.connectToDatabase().prepareStatement(query);
-						addHouseQuery.setInt(1, property_id);
-						addHouseQuery.setInt(2, Integer.parseInt(areaField.getText()));
-						addHouseQuery.setInt(3, Integer.parseInt(bedroomField.getText()));
-						addHouseQuery.setInt(4, Integer.parseInt(bathroomField.getText()));
-						addHouseQuery.setInt(5, Integer.parseInt(storyField.getText()));
-						addHouseQuery.setString(6, selectPurpose.getSelectedItem().toString());
-
-						SqlConnection.alterResults(addHouseQuery);
-
-						query = "insert into advertisement values (?, ?, ?, ?, ?, ?)";
-						PreparedStatement addAdvertisementQuery = SqlConnection.connectToDatabase()
-								.prepareStatement(query);
-						addAdvertisementQuery.setInt(1, advertisement_id);
-						addAdvertisementQuery.setString(2, selectPurpose.getSelectedItem().toString());
-						addAdvertisementQuery.setInt(3, Integer.parseInt(priceField.getText()));
-						addAdvertisementQuery.setDate(4, new java.sql.Date(System.currentTimeMillis()));
-						addAdvertisementQuery.setInt(5, property_id);
-						addAdvertisementQuery.setString(6, cnic);
-
-						SqlConnection.alterResults(addAdvertisementQuery);
-						JOptionPane.showMessageDialog(null, "Advertisement Added Successfully!");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					}catch(Exception e){
+							e.printStackTrace();
+						}
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Please Fill all the Details!");

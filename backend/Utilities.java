@@ -16,7 +16,7 @@ public class Utilities {
 	public static boolean checkStringWithSpaces(String message) {
 		for (int i = 0; i < message.length(); i++) {
 			char curr = message.charAt(i);
-			if (!(Character.isAlphabetic(curr) || Character.isSpaceChar(curr))) {
+			if (!(Character.isAlphabetic(curr) || Character.isSpaceChar(curr) || Character.isDigit(curr))) {
 				return false;
 			}
 		}

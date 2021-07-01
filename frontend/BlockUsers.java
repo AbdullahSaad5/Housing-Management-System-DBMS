@@ -4,11 +4,12 @@ import backend.SqlConnection;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -21,49 +22,56 @@ public class BlockUsers extends JPanel implements ActionListener {
 
 	private JComboBox<String> selectType;
 	private JButton[] block = new JButton[6];
-	private static int pageNumber = 1, totalPages = 1, totalCount = 0;
+	private static int pageNumber = 1, totalPages = 1, totalCount = 0, selectedIndex = 0;
 	private JLabel pageCount;
 	JButton next, prev;
 	ArrayList<User> array = new ArrayList<User>();
+	String query;
+
 	public BlockUsers() {
 		setBackground(Color.WHITE);
 		setLayout(null);
 
 		next = new JButton("");
 		next.addActionListener(this);
-		next.setIcon(new ImageIcon(BrowsePlots.class.getResource("/images/next.png")));
+		next.setIcon(new ImageIcon(Objects.requireNonNull(BrowsePlots.class.getResource("/images/next.png"))));
 		next.setBackground(null);
-		next.setBounds(735, 30, 40, 40);
+		next.setBounds(735, 120, 40, 40);
 		add(next);
 
 		prev = new JButton("");
 		prev.addActionListener(this);
-		prev.setIcon(new ImageIcon(BrowsePlots.class.getResource("/images/prev.png")));
+		prev.setIcon(new ImageIcon(Objects.requireNonNull(BrowsePlots.class.getResource("/images/prev.png"))));
 		prev.setBackground(null);
-		prev.setBounds(515, 30, 40, 40);
+		prev.setBounds(515, 120, 40, 40);
 		add(prev);
 
-		pageCount = new JLabel("");
+		pageCount = new JLabel("Page: 1/1");
 		pageCount.setHorizontalAlignment(SwingConstants.CENTER);
 		pageCount.setFont(new Font("SansSerif", Font.BOLD, 20));
-		pageCount.setBounds(573, 72, 144, 40);
+		pageCount.setBounds(563, 120, 144, 40);
 		add(pageCount);
 
-		String types[] = { "Unblocked", "Blocked"};
+		JLabel typeLabel = new JLabel("Select Type");
+		typeLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+		typeLabel.setBounds(500, 53, 130, 20);
+		add(typeLabel);
+
+		String types[] = {"Unblocked", "Blocked"};
 		selectType = new JComboBox<>(types);
-		selectType.setSelectedIndex(0);
+		selectType.setSelectedIndex(selectedIndex);
 		selectType.addActionListener(this);
 		selectType.setBounds(670, 50, 130, 24);
 		add(selectType);
 
-		JLabel typeLabel = new JLabel("Select Type");
-		typeLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-		typeLabel.setBounds(483, 50, 130, 20);
-		add(typeLabel);
 
-
-		String query = "select username, first_name, last_name, phone_number from account natural join users";
 		try {
+			if(selectType.getSelectedIndex() == 0) {
+				query = "select username, first_name, last_name, phone_number from account natural join users where blocked_status = 'N'";
+			}
+			else if(selectType.getSelectedIndex() == 1){
+				query = "select username, first_name, last_name, phone_number from account natural join users where blocked_status = 'Y'";
+			}
 			PreparedStatement houseAdvertisements = SqlConnection.connectToDatabase().prepareStatement(query);
 			ResultSet result = SqlConnection.findResult(houseAdvertisements);
 			array.removeAll(array);
@@ -85,11 +93,19 @@ public class BlockUsers extends JPanel implements ActionListener {
 		viewUsers();
 
 
-
 	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == next || e.getSource() == prev) {
+		if (e.getSource() == selectType) {
+			if(selectType.getSelectedIndex() == 0){
+				selectedIndex = 0;
+			}
+			else{
+				selectedIndex = 1;
+			}
+			AdminControlPanel.replaceContentPanel(new BlockUsers());
+		} else if (e.getSource() == next || e.getSource() == prev) {
 			if (e.getSource() == next && pageNumber < totalPages) {
 				pageNumber++;
 				removeAll();
@@ -106,43 +122,49 @@ public class BlockUsers extends JPanel implements ActionListener {
 
 		} else if (e.getSource() == block[0]) {
 			int index = (pageNumber - 1) * 4;
-			System.out.println(array.get(index).username);
+			boolean block = (selectType.getSelectedIndex() == 0);
+			blockUser(array.get(index).username, block);
 		} else if (e.getSource() == block[1]) {
 			int index = (pageNumber - 1) * 4 + 1;
-			System.out.println(array.get(index).username);
+			boolean block = (selectType.getSelectedIndex() == 0);
+			blockUser(array.get(index).username, block);
 		} else if (e.getSource() == block[2]) {
 			int index = (pageNumber - 1) * 4 + 2;
-			System.out.println(array.get(index).username);
+			boolean block = (selectType.getSelectedIndex() == 0);
+			blockUser(array.get(index).username, block);
 		} else if (e.getSource() == block[3]) {
 			int index = (pageNumber - 1) * 4 + 3;
-			System.out.println(array.get(index).username);
+			boolean block = (selectType.getSelectedIndex() == 0);
+			blockUser(array.get(index).username, block);
 		} else if (e.getSource() == block[4]) {
 			int index = (pageNumber - 1) * 4 + 4;
-			System.out.println(array.get(index).username);
-		}else if (e.getSource() == block[5]) {
+			boolean block = (selectType.getSelectedIndex() == 0);
+			blockUser(array.get(index).username, block);
+		} else if (e.getSource() == block[5]) {
 			int index = (pageNumber - 1) * 4 + 5;
-			System.out.println(array.get(index).username);
-		}else {
+			boolean block = (selectType.getSelectedIndex() == 0);
+			blockUser(array.get(index).username, block);
+		} else {
 			System.out.println(e.getID());
 		}
 	}
 
-	public JPanel createUserProfile(String username_, String name, String contact){
+	public JPanel createUserProfile(String username_, String name, String contact) {
 		JPanel panel = new JPanel();
 		panel.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
 		panel.setBounds(50, 153, 300, 150);
 		add(panel);
 		panel.setLayout(null);
 
-		JLabel username = new JLabel(username_);
+		JLabel username = new JLabel("Username: " + username_);
 		username.setBounds(10, 15, 280, 14);
 		panel.add(username);
 
-		JLabel originalName = new JLabel(name);
+		JLabel originalName = new JLabel("Name: " + name);
 		originalName.setBounds(10, 45, 280, 14);
 		panel.add(originalName);
 
-		JLabel contactNumber = new JLabel(contact);
+		JLabel contactNumber = new JLabel("Contact: " + contact);
 		contactNumber.setBounds(10, 75, 280, 14);
 		panel.add(contactNumber);
 
@@ -166,16 +188,13 @@ public class BlockUsers extends JPanel implements ActionListener {
 				if (index % 6 == 2) {
 					panel.setBounds(870, 200, 300, 150);
 					createButton(2, panel);
-				}
-				else if (index % 6 == 3) {
+				} else if (index % 6 == 3) {
 					panel.setBounds(70, 400, 300, 150);
 					createButton(3, panel);
-				}
-				else if (index % 6 == 4) {
+				} else if (index % 6 == 4) {
 					panel.setBounds(470, 400, 300, 150);
 					createButton(4, panel);
-				}
-				else if (index % 6 == 5) {
+				} else if (index % 6 == 5) {
 					panel.setBounds(870, 400, 300, 150);
 					createButton(5, panel);
 				}
@@ -185,10 +204,34 @@ public class BlockUsers extends JPanel implements ActionListener {
 		}
 	}
 
-	public void createButton(int index, JPanel panel){
-		block[index] = new JButton("Buy");
+	public void createButton(int index, JPanel panel) {
+		if (selectType.getSelectedIndex() == 0) {
+			block[index] = new JButton("Block");
+		} else if (selectType.getSelectedIndex() == 1) {
+			block[index] = new JButton("Unblock");
+
+		}
 		block[index].addActionListener(this);
 		block[index].setBounds(100, 110, 100, 23);
 		panel.add(block[index]);
+	}
+
+	public void blockUser(String username, boolean block) {
+		try {
+			PreparedStatement blockUser;
+			if (block) {
+				blockUser = SqlConnection.connectToDatabase().prepareStatement("update account" +
+						" set blocked_status = 'Y' where username = ?");
+			} else {
+				blockUser = SqlConnection.connectToDatabase().prepareStatement("update account" +
+						" set blocked_status = 'N' where username = ?");
+			}
+			blockUser.setString(1, username);
+			blockUser.executeUpdate();
+			AdminControlPanel.replaceContentPanel(new BlockUsers());
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+
 	}
 }

@@ -16,8 +16,8 @@ import javax.swing.border.LineBorder;
 import backend.SqlConnection;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Objects;
 
-@SuppressWarnings("serial")
 public class BrowsePlots extends JPanel implements ActionListener {
 
 	/**
@@ -45,14 +45,14 @@ public class BrowsePlots extends JPanel implements ActionListener {
 
 		next = new JButton("");
 		next.addActionListener(this);
-		next.setIcon(new ImageIcon(BrowseHouses.class.getResource("/images/next.png")));
+		next.setIcon(new ImageIcon(Objects.requireNonNull(BrowseHouses.class.getResource("/images/next.png"))));
 		next.setBackground(null);
 		next.setBounds(735, 30, 40, 40);
 		add(next);
 
 		prev = new JButton("");
 		prev.addActionListener(this);
-		prev.setIcon(new ImageIcon(BrowseHouses.class.getResource("/images/prev.png")));
+		prev.setIcon(new ImageIcon(Objects.requireNonNull(BrowseHouses.class.getResource("/images/prev.png"))));
 		prev.setBackground(null);
 		prev.setBounds(515, 30, 40, 40);
 		add(prev);
@@ -66,9 +66,11 @@ public class BrowsePlots extends JPanel implements ActionListener {
 		String query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
 				+ " province_name, plot_area, advertisement_id"
 				+ " from advertisement natural join property natural join colony natural join location natural join"
-				+ " city natural join province natural join plot natural join users";
+				+ " city natural join province natural join plot natural join users where username != ? and " +
+				"advertisement_id in (select advertisement_id from advertisement minus select advertisement_id from selling_record)";
 		try {
 			PreparedStatement houseAdvertisements = SqlConnection.connectToDatabase().prepareStatement(query);
+			houseAdvertisements.setString(1, Login.currentUserID);
 			ResultSet result = SqlConnection.findResult(houseAdvertisements);
 			array.removeAll(array);
 			while (result.next()) {
@@ -87,8 +89,10 @@ public class BrowsePlots extends JPanel implements ActionListener {
 		} else {
 			totalPages = (totalCount / 4);
 		}
-
-		titleLabel.setText(String.valueOf( "Page: " + pageNumber) + "/" + String.valueOf(totalPages));
+		if(totalPages == 0){
+			totalPages = 1;
+		}
+		titleLabel.setText("Page: " + pageNumber + "/" + totalPages);
 		viewAds();
 	}
 
@@ -101,30 +105,30 @@ public class BrowsePlots extends JPanel implements ActionListener {
 		adPanel.setLayout(null);
 
 		JLabel housePicture = new JLabel("");
-		housePicture.setIcon(new ImageIcon(BrowseHouses.class.getResource("/images/stock land.jpeg")));
+		housePicture.setIcon(new ImageIcon(Objects.requireNonNull(BrowseHouses.class.getResource("/images/stock land.jpeg"))));
 		housePicture.setBounds(10, 10, 194, 200);
 		adPanel.add(housePicture);
 
 		JLabel priceLabel = new JLabel(String.valueOf(price));
 		priceLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
-		priceLabel.setIcon(new ImageIcon(BrowseHouses.class.getResource("/images/price.png")));
+		priceLabel.setIcon(new ImageIcon(Objects.requireNonNull(BrowseHouses.class.getResource("/images/price.png"))));
 		priceLabel.setBounds(214, 11, 276, 32);
 		adPanel.add(priceLabel);
 
 		JLabel ownerLabel = new JLabel(owner);
-		ownerLabel.setIcon(new ImageIcon(BrowseHouses.class.getResource("/images/owner.png")));
+		ownerLabel.setIcon(new ImageIcon(Objects.requireNonNull(BrowseHouses.class.getResource("/images/owner.png"))));
 		ownerLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
 		ownerLabel.setBounds(218, 50, 270, 21);
 		adPanel.add(ownerLabel);
 
 		JLabel locationLabel = new JLabel("<html>" + location + "</html>");
-		locationLabel.setIcon(new ImageIcon(BrowseHouses.class.getResource("/images/location.png")));
+		locationLabel.setIcon(new ImageIcon(Objects.requireNonNull(BrowseHouses.class.getResource("/images/location.png"))));
 		locationLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		locationLabel.setBounds(220, 75, 270, 30);
 		adPanel.add(locationLabel);
 
 		JLabel areaLabel = new JLabel(String.valueOf(area) + " Marla");
-		areaLabel.setIcon(new ImageIcon(BrowseHouses.class.getResource("/images/area.png")));
+		areaLabel.setIcon(new ImageIcon(Objects.requireNonNull(BrowseHouses.class.getResource("/images/area.png"))));
 		areaLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		areaLabel.setBounds(224, 118, 100, 21);
 		adPanel.add(areaLabel);
@@ -179,16 +183,16 @@ public class BrowsePlots extends JPanel implements ActionListener {
 			
 		} else if (e.getSource() == buttons[0]) {
 			int index = (pageNumber - 1) * 4;
-			System.out.println(array.get(index).id);
+			BrowseHouses.buyAdvertisement(array.get(index).id);
 		} else if (e.getSource() == buttons[1]) {
 			int index = (pageNumber - 1) * 4 + 1;
-			System.out.println(array.get(index).id);
+			BrowseHouses.buyAdvertisement(array.get(index).id);
 		} else if (e.getSource() == buttons[2]) {
 			int index = (pageNumber - 1) * 4 + 2;
-			System.out.println(array.get(index).id);
+			BrowseHouses.buyAdvertisement(array.get(index).id);
 		} else if (e.getSource() == buttons[3]) {
 			int index = (pageNumber - 1) * 4 + 3;
-			System.out.println(array.get(index).id);
+			BrowseHouses.buyAdvertisement(array.get(index).id);
 		} else {
 			System.out.println(e.getID());
 		}
