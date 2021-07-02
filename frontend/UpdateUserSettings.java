@@ -41,7 +41,7 @@ public class UpdateUserSettings extends SignUp {
 			emailField.setText(result.getString(7));
 			homeField.setText(result.getString(8));
 			phoneField.setText(result.getString(9));
-			loginButton.setBounds(170, 670, 120, 25);
+			loginButton.setBounds(130, 670, 180, 25);
 			loginButton.setText("Update Data");
 			loginButton.addActionListener(this);
 

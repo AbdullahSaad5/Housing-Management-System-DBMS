@@ -17,23 +17,27 @@ import java.util.Objects;
 
 public class AdminControlPanel extends JPanel implements ActionListener, MouseListener {
 
-	private final JComboBox selectProvince;
-	private final JComboBox<String> selectCity;
-	private final JComboBox<String> selectLocation;
-	private final JComboBox<String> selectType;
-	private final JTextField newLocation;
-	private final JLabel colonyLabel;
-	private final JLabel locationLabel;
-	private final JLabel cityLabel;
-	private ArrayList<String> provinceList;
-	private final JButton submitButton;
-	private final JButton addLocations;
-	private final JButton blockUsers;
-	private final JButton viewRecords;
-	private final JButton logout;
-	private final JButton updateLocation;
-	private final JButton deleteLocation;
-	private static JPanel currentPanel, contentPanel;
+	protected final JComboBox selectProvince;
+	protected final JComboBox<String> selectCity;
+	protected final JComboBox<String> selectLocation;
+	protected final JComboBox<String> selectType;
+	protected final JTextField newLocation;
+	protected final JLabel provinceLabel;
+	protected final JLabel colonyLabel;
+	protected final JLabel locationLabel;
+	protected final JLabel cityLabel;
+	protected final JLabel locationType;
+	protected JLabel mainLabel;
+	protected ArrayList<String> provinceList;
+	protected final JButton submitButton;
+	protected final JButton addLocations;
+	protected final JButton blockUsers;
+	protected final JButton viewRecords;
+	protected final JButton addAgents;
+	protected final JButton logout;
+	protected final JButton updateLocation;
+	protected final JButton deleteLocation;
+	protected static JPanel currentPanel, contentPanel;
 
 	/**
 	 * Create the panel.
@@ -84,6 +88,17 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		viewRecords.setVerticalTextPosition(SwingConstants.BOTTOM);
 		viewRecords.setHorizontalTextPosition(SwingConstants.CENTER);
 		controlPanel.add(viewRecords);
+
+		addAgents = new JButton("Add Agents");
+		addAgents.addMouseListener(this);
+		addAgents.setFocusable(false);
+		addAgents.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		addAgents.setPreferredSize(new Dimension(100, 60));
+		addAgents.setBackground(new Color(255, 255, 255));
+		addAgents.setIcon(new ImageIcon(Objects.requireNonNull(UserDashboard.class.getResource("/images/add.png"))));
+		addAgents.setVerticalTextPosition(SwingConstants.BOTTOM);
+		addAgents.setHorizontalTextPosition(SwingConstants.CENTER);
+		controlPanel.add(addAgents);
 
 		logout = new JButton("Logout");
 		logout.addMouseListener(this);
@@ -143,7 +158,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		newLocation.setBounds(670, 430, 130, 24);
 		contentPanel.add(newLocation);
 
-		JLabel mainLabel = new JLabel("Add New Locations");
+		mainLabel = new JLabel("Add New Locations");
 		mainLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
 		mainLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		mainLabel.setBounds(10, 50, 1260, 30);
@@ -161,7 +176,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		updateLocation.setFocusable(false);
 		contentPanel.add(updateLocation);
 
-		JLabel provinceLabel = new JLabel("Province");
+		provinceLabel = new JLabel("Province");
 		provinceLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
 		provinceLabel.setBounds(483, 220, 100, 20);
 		contentPanel.add(provinceLabel);
@@ -188,7 +203,7 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 		selectType.setBounds(670, 150, 130, 24);
 		contentPanel.add(selectType);
 
-		JLabel locationType = new JLabel("Location Type");
+		locationType = new JLabel("Location Type");
 		locationType.setFont(new Font("SansSerif", Font.BOLD, 14));
 		locationType.setBounds(483, 150, 130, 20);
 		contentPanel.add(locationType);
@@ -486,7 +501,9 @@ public class AdminControlPanel extends JPanel implements ActionListener, MouseLi
 			AdminControlPanel.replaceContentPanel(new BlockUsers());
 		} else if (e.getSource() == viewRecords) {
 			AdminControlPanel.replaceContentPanel(new ViewRecords());
-		} else if (e.getSource() == logout) {
+		} else if (e.getSource() == addAgents) {
+			Template.changePanel(new AddAgents());
+		}else if (e.getSource() == logout) {
 			Template.mainFrame.setSize(460, 640);
 			Template.changePanel(new Login());
 		} else if (e.getSource() == deleteLocation) {

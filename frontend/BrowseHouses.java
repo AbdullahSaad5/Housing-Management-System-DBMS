@@ -32,7 +32,7 @@ public class BrowseHouses extends JPanel implements ActionListener {
 	String query;
 
 	public BrowseHouses() {
-
+		Filters.browseHouses = true;
 		setBackground(Color.WHITE);
 		setBounds(0, 0, 1280, 650);
 		setLayout(null);
@@ -64,11 +64,34 @@ public class BrowseHouses extends JPanel implements ActionListener {
 		pageCount.setBounds(573, 72, 144, 40);
 		add(pageCount);
 
-		query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
-				+ " province_name, house_bedrooms, house_bathrooms, house_stories, house_area, advertisement_id"
-				+ " from advertisement natural join property natural join colony natural join location natural join"
-				+ " city natural join province natural join house natural join users where username != ? and " +
-				"advertisement_id in (select advertisement_id from advertisement minus select advertisement_id from selling_record)";
+			query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
+					+ " province_name, house_bedrooms, house_bathrooms, house_stories, house_area, advertisement_id, house_purpose"
+					+ " from advertisement natural join property natural join colony natural join location natural join"
+					+ " city natural join province natural join house natural join users where username != ? and " +
+					"advertisement_id in (select advertisement_id from advertisement minus select advertisement_id from selling_record)";
+		if(Filters.selectedOption != 0){
+			String filter = "";
+			int option = Filters.selectedOption;
+			if(option == 1){
+				filter =" order by advertisement_price";
+			}
+			else if(option == 2){
+				filter =" order by advertisement_price desc";
+			}
+			else if(option == 3){
+				filter = " order by house_bedrooms desc, house_bathrooms desc";
+			}
+			else if(option == 4){
+				filter = " order by house_bedrooms, house_bathrooms";
+			}
+			else if(option == 5){
+				filter = " order by house_area desc";
+			}
+			else if(option == 6){
+				filter = " order by house_area";
+			}
+			query += filter;
+		}
 		try {
 			PreparedStatement houseAdvertisements = SqlConnection.connectToDatabase().prepareStatement(query);
 			houseAdvertisements.setString(1, Login.currentUserID);
@@ -78,7 +101,7 @@ public class BrowseHouses extends JPanel implements ActionListener {
 				Ad curr = new Ad(result.getInt(12), result.getInt(1), result.getString(2) + " " + result.getString(3),
 						result.getString(4) + ", " + result.getString(5) + ", " + result.getString(6) + ", "
 								+ result.getString(7),
-						result.getInt(8), result.getInt(9), result.getInt(10), result.getInt(11));
+						result.getInt(8), result.getInt(9), result.getInt(10), result.getInt(11), result.getString(13));
 				array.add(curr);
 			}
 		} catch (Exception e) {
@@ -99,7 +122,7 @@ public class BrowseHouses extends JPanel implements ActionListener {
 	}
 
 	public JPanel createAdvertisement(int price, String owner, String location, int bedrooms, int bathrooms,
-			int stories, int area) {
+			int stories, int area, String purpose) {
 		JPanel adPanel = new JPanel();
 		adPanel.setBackground(Color.WHITE);
 		adPanel.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
@@ -154,6 +177,12 @@ public class BrowseHouses extends JPanel implements ActionListener {
 		areaLabel.setBounds(350, 150, 100, 21);
 		adPanel.add(areaLabel);
 
+		JLabel purposeLabel = new JLabel("( " + purpose + " )");
+		purposeLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+		purposeLabel.setHorizontalAlignment(JLabel.RIGHT);
+		purposeLabel.setBounds(380, 14, 100, 21);
+		adPanel.add(purposeLabel);
+
 		return adPanel;
 	}
 
@@ -163,7 +192,7 @@ public class BrowseHouses extends JPanel implements ActionListener {
 			if (index < totalCount) {
 				Ad curr = array.get(index);
 				JPanel panel = createAdvertisement(curr.price, curr.owner, curr.location, curr.bedrooms, curr.bathrooms,
-						curr.stories, curr.area);
+						curr.stories, curr.area, curr.purpose);
 				if (index % 4 == 0) {
 					panel.setBounds(70, 138, 500, 230);
 					buttons[0] = new JButton("Buy");

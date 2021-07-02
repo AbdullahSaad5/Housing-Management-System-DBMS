@@ -338,6 +338,8 @@ public class UserDashboard extends JPanel implements ActionListener {
 			replaceContentPanel(new UserSettings());
 		} else if(ac.getSource() == myAds){
 			replaceContentPanel(new ViewOwnAds());
+		}else if(ac.getSource() == filters){
+			new Filters();
 		}
 		else if (ac.getSource() == postAd) {
 			if (selectType.getSelectedIndex() == 1) {

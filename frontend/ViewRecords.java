@@ -16,19 +16,20 @@ import javax.swing.*;
 
 public class ViewRecords extends JPanel implements ActionListener {
 
-	private JTextArea textArea;
-	private JScrollPane mainWindow;
-	private JTextField keywordField;
-	private JButton search;
+	protected JTextArea textArea;
+	protected JScrollPane mainWindow;
+	protected JTextField keywordField;
+	protected JButton search;
+	JLabel mainLabel, keyword;
 	String query;
 	public ViewRecords() {
 		setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("View Selling Records");
-		lblNewLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setBounds(10, 31, 1260, 30);
-		add(lblNewLabel);
+		mainLabel = new JLabel("View Selling Records");
+		mainLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+		mainLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		mainLabel.setBounds(10, 31, 1260, 30);
+		add(mainLabel);
 
 
 		textArea = new JTextArea();
@@ -45,7 +46,7 @@ public class ViewRecords extends JPanel implements ActionListener {
 		query = "select record_id, advertisement_id, record_date, username, first_name, last_name, CNIC from selling_record natural join users order by record_id, advertisement_id";
 		writeRecords();
 
-		JLabel keyword = new JLabel("Username:");
+		keyword = new JLabel("Username:");
 		keyword.setHorizontalAlignment(SwingConstants.TRAILING);
 		keyword.setFont(new Font("SansSerif", Font.BOLD, 14));
 		keyword.setBounds(491, 110, 100, 20);
@@ -61,6 +62,7 @@ public class ViewRecords extends JPanel implements ActionListener {
 		search.setBounds(780, 106, 100, 23);
 		add(search);
 
+		setVisible(true);
 	}
 
 
@@ -69,17 +71,20 @@ public class ViewRecords extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(!keywordField.getText().isBlank()){
 			query = "select record_id, advertisement_id, record_date, username, first_name, last_name, CNIC from selling_record natural join users where username like '%" + keywordField.getText() + "%' order by record_id, advertisement_id";
-			writeRecords();
 		}
+		else{
+			query = "select record_id, advertisement_id, record_date, username, first_name, last_name, CNIC from selling_record natural join users order by record_id, advertisement_id";
+		}
+			writeRecords();
 	}
 
 	public void writeRecords(){
 		try {
-			textArea.setText("\tRecord ID \t Ad ID \t Buy Date \t Username \t\t Buyer Name \t\t CNIC\n\n");
+			textArea.setText("\tRecord ID\tAd ID\tBuy Date\tUsername\tBuyer Name\tCNIC\n\n");
 			PreparedStatement records = SqlConnection.connectToDatabase().prepareStatement(query);
 			ResultSet result = SqlConnection.findResult(records);
 			while (result.next()){
-				textArea.append("\t" + result.getInt(1) +" \t " + result.getInt(2) +" \t " + result.getDate(3) +" \t " + result.getString(4) + " \t " + result.getString(5) + " " + result.getString(6) +" \t " + result.getString(7) + "\n");
+				textArea.append("\t" + result.getInt(1) +"\t " + result.getInt(2) +"\t" + result.getDate(3) +"\t" + result.getString(4) + "\t" + result.getString(5) + " " + result.getString(6) +"\t" + result.getString(7) + "\n");
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();

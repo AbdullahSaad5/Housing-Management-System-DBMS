@@ -31,6 +31,7 @@ public class BrowsePlots extends JPanel implements ActionListener {
 	private JButton buttons[] = new JButton[4];
 
 	public BrowsePlots() {
+		Filters.browseHouses = false;
 
 		setBackground(Color.WHITE);
 		setBounds(0, 0, 1280, 650);
@@ -63,11 +64,33 @@ public class BrowsePlots extends JPanel implements ActionListener {
 		pageCount.setBounds(573, 72, 144, 40);
 		add(pageCount);
 
-		String query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
+		String query;
+
+		query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
 				+ " province_name, plot_area, advertisement_id"
 				+ " from advertisement natural join property natural join colony natural join location natural join"
 				+ " city natural join province natural join plot natural join users where username != ? and " +
 				"advertisement_id in (select advertisement_id from advertisement minus select advertisement_id from selling_record)";
+		if(Filters.selectedOption != 0){
+			String filter = "";
+			int option = Filters.selectedOption;
+			if(option == 1){
+				filter =" order by advertisement_price";
+			}
+			else if(option == 2){
+				filter =" order by advertisement_price desc";
+			}
+			else if(option == 3){
+				filter = " order by plot_area desc";
+			}
+			else if(option == 4){
+				filter = " order by plot_area";
+			}
+			else{
+
+			}
+			query += filter;
+		}
 		try {
 			PreparedStatement houseAdvertisements = SqlConnection.connectToDatabase().prepareStatement(query);
 			houseAdvertisements.setString(1, Login.currentUserID);

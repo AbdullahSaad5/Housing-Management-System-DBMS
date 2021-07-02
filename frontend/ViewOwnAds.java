@@ -74,7 +74,7 @@ public class ViewOwnAds extends JPanel implements ActionListener {
         if(selectType.getSelectedIndex() == 0) {
 
             query = "select advertisement_price, first_name, last_name, colony_name, location_name, city_name,"
-                    + " province_name, house_bedrooms, house_bathrooms, house_stories, house_area, advertisement_id"
+                    + " province_name, house_bedrooms, house_bathrooms, house_stories, house_area, advertisement_id, house_purpose"
                     + " from advertisement natural join property natural join colony natural join location natural join"
                     + " city natural join province natural join house natural join users where username = ? and " +
                     "advertisement_id in (select advertisement_id from advertisement minus select advertisement_id from selling_record)";
@@ -98,7 +98,7 @@ public class ViewOwnAds extends JPanel implements ActionListener {
                      curr = new Ad(result.getInt(12), result.getInt(1), result.getString(2) + " " + result.getString(3),
                             result.getString(4) + ", " + result.getString(5) + ", " + result.getString(6) + ", "
                                     + result.getString(7),
-                            result.getInt(8), result.getInt(9), result.getInt(10), result.getInt(11));
+                            result.getInt(8), result.getInt(9), result.getInt(10), result.getInt(11), result.getString(13));
                 }
                 else{
                     curr = new Ad(result.getInt(9), result.getInt(1), result.getString(2) + " " + result.getString(3),
@@ -162,12 +162,14 @@ public class ViewOwnAds extends JPanel implements ActionListener {
         areaLabel.setBounds(224, 118, 100, 21);
         adPanel.add(areaLabel);
 
+
+
         return adPanel;
     }
 
 
     public JPanel createAdvertisement(int price, String owner, String location, int bedrooms, int bathrooms,
-                                      int stories, int area) {
+                                      int stories, int area, String purpose) {
         JPanel adPanel = new JPanel();
         adPanel.setBackground(Color.WHITE);
         adPanel.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
@@ -222,6 +224,12 @@ public class ViewOwnAds extends JPanel implements ActionListener {
         areaLabel.setBounds(350, 150, 100, 21);
         adPanel.add(areaLabel);
 
+        JLabel purposeLabel = new JLabel("( " + purpose + " )");
+        purposeLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+        purposeLabel.setHorizontalAlignment(JLabel.RIGHT);
+        purposeLabel.setBounds(380, 14, 100, 21);
+        adPanel.add(purposeLabel);
+
         return adPanel;
     }
 
@@ -233,7 +241,7 @@ public class ViewOwnAds extends JPanel implements ActionListener {
                 JPanel panel;
                 if(selectType.getSelectedIndex() == 0) {
                     panel = createAdvertisement(curr.price, curr.owner, curr.location, curr.bedrooms, curr.bathrooms,
-                            curr.stories, curr.area);
+                            curr.stories, curr.area, curr.purpose);
                 }
                 else{
                     panel = createAdvertisement(curr.price, curr.owner, curr.location, curr.area);

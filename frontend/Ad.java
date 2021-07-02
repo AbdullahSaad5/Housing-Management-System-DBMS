@@ -9,6 +9,7 @@ public class Ad {
 	int bathrooms;
 	int stories;
 	int area;
+	String purpose;
 
 	public Ad(int id, int price, String owner, String location, int area) {
 		this.id = id;
@@ -17,7 +18,7 @@ public class Ad {
 		this.location = location;
 		this.area = area;
 	}
-	public Ad(int id, int price, String owner, String location, int bedrooms, int bathrooms, int stories, int area) {
+	public Ad(int id, int price, String owner, String location, int bedrooms, int bathrooms, int stories, int area, String purpose) {
 		this.id = id;
 		this.price = price;
 		this.owner = owner;
@@ -26,5 +27,6 @@ public class Ad {
 		this.bathrooms = bathrooms;
 		this.stories = stories;
 		this.area = area;
+		this.purpose = purpose;
 	}
 }

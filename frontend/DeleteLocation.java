@@ -31,6 +31,7 @@ public class DeleteLocation extends JPanel implements ActionListener {
 	protected JScrollPane mainWindow;
 	protected JTextArea textArea;
 	protected JButton search, delete;
+	protected JLabel locationType, keyword, locationID;
 
 	public DeleteLocation() {
 		setLayout(null);
@@ -51,12 +52,12 @@ public class DeleteLocation extends JPanel implements ActionListener {
 		JOptionPane.showMessageDialog(null, "<html><p style: 'text-align: center'>WARNING: Deleting/Updating a location will delete/update "
 				+ "all ADVERTISEMENTS and PROPERTIES linked to it<br><br>&times; This action is IRREVERSIBLE!<br><br></p></html>");
 		
-		JLabel locationType = new JLabel("Location Type");
+		locationType = new JLabel("Location Type");
 		locationType.setFont(new Font("SansSerif", Font.BOLD, 14));
 		locationType.setBounds(390, 150, 130, 20);
 		add(locationType);
 
-		JLabel keyword = new JLabel("Keyword:");
+		keyword = new JLabel("Keyword:");
 		keyword.setFont(new Font("SansSerif", Font.BOLD, 14));
 		keyword.setBounds(390, 193, 130, 20);
 		add(keyword);
@@ -66,7 +67,7 @@ public class DeleteLocation extends JPanel implements ActionListener {
 		add(keywordField);
 		keywordField.setColumns(10);
 
-		JLabel locationID = new JLabel("Location ID:");
+		locationID = new JLabel("Location ID:");
 		locationID.setFont(new Font("SansSerif", Font.BOLD, 14));
 		locationID.setBounds(390, 238, 130, 20);
 		add(locationID);
