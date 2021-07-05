@@ -9,14 +9,14 @@ import java.sql.SQLException;
 
 public class ViewAgents extends ViewRecords {
     public ViewAgents() {
-        super();
         mainLabel.setText("View Agents");
         query = "select agent_firstname, agent_lastname, agent_contact, agent_email, location_name, city_name, province_name" +
                 " from agent natural join contains natural join location natural join city natural join province";
         writeRecords();
         keyword.setText("Location:");
-        Template.mainFrame.revalidate();
-        Template.mainFrame.repaint();
+        revalidate();
+        repaint();
+
     }
 
 

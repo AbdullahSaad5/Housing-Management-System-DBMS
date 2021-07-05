@@ -17,7 +17,7 @@ public class Filters implements ActionListener {
         mainFrame = new JFrame();
         mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(Template.class.getResource("/images/house.png")));
         mainFrame.setTitle("Filters");
-        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         mainFrame.setBounds(0, 0, 400, 200);
         mainFrame.setResizable(false);
         mainFrame.setLocationRelativeTo(null);
